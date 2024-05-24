@@ -1,4 +1,4 @@
-# PhotoPicker_SwiftUI
+# PhotoPickerKit
 
 
 [![SPM](https://img.shields.io/badge/SPM-supported-DE5C43.svg?style=flat)](https://swift.org/package-manager/)
@@ -11,9 +11,9 @@
 
 ## Example
 
-SwiftUI package after the album when the user's cell phone album storage of photos and videos to reach a certain number and (for example, more than 150G, 20,000 photos and videos or so), LazyVGrid will fall into an arithmetic difficult situation, the CPU occupancy remains high, and temporarily did not find a good way to optimize, so it is packaged again with UIKit, to see the actual needs of the discretionary use 
+SwiftUI package after the album when the user's cell phone album storage of photos and videos to reach a certain number and (for example, more than 150G, 20,000 photos and videos or so), LazyVGrid will fall into an arithmetic difficult situation, the CPU occupancy remains high, and temporarily did not find a good way to optimize, so it is packaged again with UIKit, to see the actual needs of the discretionary use 。[SwiftUI Demo](https://github.com/jackiehu/PhotoPicker_SwiftUI)
 
-Open an album wrapped in UIKit
+Open the custom album
 
 ```swift
                 Button {
@@ -23,32 +23,13 @@ Open an album wrapped in UIKit
                         .foregroundColor(Color.red)
                         .frame(height: 50)
                 }
-                .galleryHostPicker(isPresented: $isPresentedGallery,
+                .galleryPicker(isPresented: $isPresentedGallery,
                                    maxSelectionCount: 9,
                                    selectTitle: "Videos",
                                    autoCrop: true,
                                    cropRatio: .init(width: 1, height: 1),
                                    onlyImage: false,
                                    selected: $selectItem.pictures)
-```
-
-Open a photo album wrapped with SwiftUI
-
-```swift
-                Button {
-                    isPresentedGallery.toggle()
-                } label: {
-                    Text("打开自定义相册SwiftUI")
-                        .foregroundColor(Color.red)
-                        .frame(height: 50)
-                }
-                .galleryPicker(isPresented: $isPresentedGallery,
-                               maxSelectionCount: 7,
-                               selectTitle: "Videos",
-                               autoCrop: true,
-                               cropRatio: .init(width: 1, height: 1),
-                               onlyImage: false,
-                               selected: $selectItem.pictures)
 ```
 
 Open the system album
@@ -95,7 +76,7 @@ Access to photo video editing tools
 
 Select `File > Swift Packages > Add Pacakage Dependency` in Xcode's menu bar, and enter in the search bar
 
-`https://github.com/jackiehu/PhotoPicker_SwiftUI`, you can complete the integration
+`https://github.com/jackiehu/PhotoPickerKit`, you can complete the integration
 
 ### Manual Install
 
