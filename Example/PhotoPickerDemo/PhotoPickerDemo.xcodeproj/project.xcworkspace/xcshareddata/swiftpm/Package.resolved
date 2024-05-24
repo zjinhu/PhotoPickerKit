@@ -1,0 +1,24 @@
+{
+  "originHash" : "2e37d13ab09cbfb7162287b56ab16837f97494211e6be76517cb03f7e86a3f84",
+  "pins" : [
+    {
+      "identity" : "brick_swiftui",
+      "kind" : "remoteSourceControl",
+      "location" : "https://github.com/zjinhu/Brick_SwiftUI.git",
+      "state" : {
+        "revision" : "4d6399e40893e6e43c156ee8475039a4fc038400",
+        "version" : "0.3.5"
+      }
+    },
+    {
+      "identity" : "jxsegmentedview",
+      "kind" : "remoteSourceControl",
+      "location" : "https://github.com/pujiaxin33/JXSegmentedView.git",
+      "state" : {
+        "revision" : "0e2f4407f3072f69c9d0157f08ba6f98713bd764",
+        "version" : "1.3.3"
+      }
+    }
+  ],
+  "version" : 3
+}

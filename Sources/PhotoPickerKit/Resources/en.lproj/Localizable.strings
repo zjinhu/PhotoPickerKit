@@ -1,0 +1,76 @@
+/* 
+  Localizable.strings
+  PhotoPicker_SwiftUI
+
+  Created by HU on 2024/4/30.
+  
+*/
+"你已允许访问选择照片，可管理选择更多照片" = "You have been given access to select photos and can manage to select more photos";
+"管理" = "Go";
+"预览" = "Preview";
+"完成" = "Done";
+"还原" = "Reset";
+"编辑" = "Edit";
+"最多可选%i张照片" = "Up to selectable %i";
+"动态效果" = "Live";
+
+"Slo-mo" = "Slo-mo";
+"Recents" = "Recents";
+"Recently Added" = "Recently Added";
+"Favorites" = "Favorites";
+"Recently Deleted" = "Recently Deleted";
+"Live Photos" = "Live Photos";
+"Videos" = "Videos";
+"All Photos" = "All Photos";
+"Selfies" = "Selfies";
+"Screenshots" = "Screenshots";
+"Camera Roll" = "Camera Roll";
+
+"原图" = "Original";
+"原片" = "Original";
+"蒙版素材" = "Masks";
+"音量" = "Volume";
+"明亮" = "Light";
+"删除" = "Delete";
+"原始比例" = "Original";
+"自由格式" = "FreeForm";
+"正方形" = "Square";
+"亮度" = "Brightness";
+"对比度" = "Contrast";
+"饱和度" = "Exposure";
+"曝光度" = "Saturation";
+"色温" = "Warmth";
+"暗角" = "Vignette";
+"锐化" = "Sharpen";
+"高光" = "Highlights";
+"阴影" = "Shadows";
+
+"唯美" = "Nashville";
+"梦幻" = "Toaster";
+"老电影" = "Old movie";
+"怀旧" = "Nostalgia";
+"黑白" = "Black";
+"色调" = "Tone";
+"模糊" = "Blurry";
+"岁月" = "Years";
+"单色" = "Monochrome";
+"褪色" = "Fade";
+"冲印" = "Print";
+"铬黄" = "Chrome";
+
+"图片下载中" = "Picture downloading";
+"视频下载中" = "Video downloading";
+"正在同步iCloud" = "iCloud syncing";
+"iCloud同步失败" = "iCloud sync failed";
+"图片获取失败!" = "Image acquisition failed!";
+"视频获取失败!" = "Video acquisition failed!";
+"拖动到此处删除" = "Drag here to delete";
+"松手即可删除" = "Let go to delete";
+"提示" = "Prompt";
+"正在处理..." = "Processing...";
+"处理失败" = "Processing failed";
+"取消" = "Cancel";
+"确定" = "Done";
+
+"选择范围" = "Range of options";
+"由于系统限制，较长的动画时间可能会出现卡顿" = "Longer animation times may lag due to system limitations";

@@ -7,13 +7,11 @@
 ![Swift 5.0+](https://img.shields.io/badge/Swift-5.0%2B-orange.svg)
 ![SwiftUI 3.0+](https://img.shields.io/badge/SwiftUI-3.0%2B-orange.svg)
 
-## [中文说明](https://github.com/zjinhu/PhotoPicker_SwiftUI/blob/main/README_ZH.md)
+## 例子
 
-## Example
+SwiftUI封装完相册后当用户手机内相册存储的照片视频达到一定的数量及（例如150G以上，两万张照片视频左右），LazyVGrid就会陷入一个运算艰难的境地，CPU占用居高不下，暂时没找到很好的优化办法，所以就用UIKit又封装了一遍，看实际需求酌情使用
 
-SwiftUI package after the album when the user's cell phone album storage of photos and videos to reach a certain number and (for example, more than 150G, 20,000 photos and videos or so), LazyVGrid will fall into an arithmetic difficult situation, the CPU occupancy remains high, and temporarily did not find a good way to optimize, so it is packaged again with UIKit, to see the actual needs of the discretionary use 
-
-Open an album wrapped in UIKit
+打开使用UIKit封装的相册
 
 ```swift
                 Button {
@@ -32,7 +30,7 @@ Open an album wrapped in UIKit
                                    selected: $selectItem.pictures)
 ```
 
-Open a photo album wrapped with SwiftUI
+打开使用SwiftUI封装的相册
 
 ```swift
                 Button {
@@ -51,7 +49,7 @@ Open a photo album wrapped with SwiftUI
                                selected: $selectItem.pictures)
 ```
 
-Open the system album
+打开系统相册
 
 ```swift
                 Button {
@@ -78,7 +76,7 @@ Open the system album
                 }
 ```
 
-Access to photo video editing tools
+进入照片视频编辑工具
 
 ```swift
         .editPicker(isPresented: $isPresentedCrop,
@@ -88,25 +86,27 @@ Access to photo video editing tools
         }
 ```
 
-## Usage
 
 
-## Install
-
-Select `File > Swift Packages > Add Pacakage Dependency` in Xcode's menu bar, and enter in the search bar
-
-`https://github.com/jackiehu/PhotoPicker_SwiftUI`, you can complete the integration
-
-### Manual Install
-
-PhotoPicker_SwiftUI also supports manual Install, just drag the PhotoPicker_SwiftUI folder in the Sources folder into the project that needs to be installed
+## 用法
 
 
-## Author
+## 安装
+
+在 Xcode 的菜单栏中选择 `File > Swift Packages > Add Pacakage Dependency`，然后在搜索栏输入
+
+`https://github.com/jackiehu/PhotoPicker_SwiftUI`
+
+### 手动集成
+
+PhotoPicker_SwiftUI 也支持手动集成，只需把Sources文件夹中的PhotoPicker_SwiftUI文件夹拖进需要集成的项目即可
+
+
+## 作者
 
 hu, 
 
-## More tools to speed up APP development
+## 更多砖块工具加速APP开发
 
 [![ReadMe Card](https://github-readme-stats.vercel.app/api/pin/?username=jackiehu&repo=SwiftMediator&theme=radical&locale=cn)](https://github.com/jackiehu/SwiftMediator)
 
@@ -117,6 +117,8 @@ hu,
 [![ReadMe Card](https://github-readme-stats.vercel.app/api/pin/?username=jackiehu&repo=SwiftMesh&theme=radical&locale=cn)](https://github.com/jackiehu/SwiftMesh)
 
 [![ReadMe Card](https://github-readme-stats.vercel.app/api/pin/?username=jackiehu&repo=SwiftNotification&theme=radical&locale=cn)](https://github.com/jackiehu/SwiftNotification)
+
+
 
 
 ## 许可
