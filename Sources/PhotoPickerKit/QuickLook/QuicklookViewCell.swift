@@ -60,7 +60,6 @@ class QuicklookCell: UICollectionViewCell{
         let imageView = UIImageView()
         imageView.contentMode = .scaleAspectFill
         imageView.translatesAutoresizingMaskIntoConstraints = false
-        imageView.backgroundColor = .gray.withAlphaComponent(0.3)
         imageView.clipsToBounds = true
         return imageView
     }()
@@ -160,9 +159,8 @@ class QuicklookImageCell: UICollectionViewCell{
     
     lazy var imageView: UIImageView = {
         let imageView = UIImageView()
-        imageView.contentMode = .scaleAspectFill
+        imageView.contentMode = .scaleAspectFit
         imageView.translatesAutoresizingMaskIntoConstraints = false
-        imageView.backgroundColor = .gray.withAlphaComponent(0.3)
         imageView.clipsToBounds = true
         return imageView
     }()
@@ -208,11 +206,11 @@ class QuicklookGifCell: UICollectionViewCell {
     var photoModel: GifViewModel?
     
     lazy var gifView: UIGIFImageView = {
-        let gitView = UIGIFImageView()
-        gitView.contentMode = .scaleAspectFit
-        gitView.translatesAutoresizingMaskIntoConstraints = false
-        gitView.clipsToBounds = true
-        return gitView
+        let gifView = UIGIFImageView()
+        gifView.contentMode = .scaleAspectFit
+        gifView.translatesAutoresizingMaskIntoConstraints = false
+        gifView.clipsToBounds = true
+        return gifView
     }()
     
     override init(frame: CGRect) {
