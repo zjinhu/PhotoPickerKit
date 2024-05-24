@@ -11,6 +11,15 @@
 
 SwiftUI封装完相册后当用户手机内相册存储的照片视频达到一定的数量及（例如150G以上，两万张照片视频左右），LazyVGrid就会陷入一个运算艰难的境地，CPU占用居高不下，暂时没找到很好的优化办法，所以就用UIKit又封装了一遍，看实际需求酌情使用,Demo在[SwiftUI封装](https://github.com/zjinhu/PhotoPicker_SwiftUI)
 
+可选相册，可预览编辑Gif Video Image Live Photo，透明图片可调整背景色方便编辑
+
+| <img src="Image/1.png" style="zoom:25%;" /> | <img src="Image/2.png" style="zoom:25%;" /> | <img src="Image/3.png" style="zoom:25%;" /> |
+| ------------------------------------------- | ------------------------------------------- | ------------------------------------------- |
+| <img src="Image/4.png" style="zoom:25%;" /> | <img src="Image/5.png" style="zoom:25%;" /> | <img src="Image/6.png" style="zoom:25%;" /> |
+| <img src="Image/7.png" style="zoom:25%;" /> | <img src="Image/8.png" style="zoom:25%;" /> | <img src="Image/9.png" style="zoom:25%;" /> |
+
+
+
 打开使用封装的相册
 
 ```swift

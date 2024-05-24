@@ -196,9 +196,7 @@ class QuicklookGifCell: UICollectionViewCell {
                 .receive(on: RunLoop.main)
                 .sink {[weak self] imageData in
                     guard let imageData = imageData else { return }
-                    DispatchQueue.main.asyncAfter(deadline: .now() + 1){
-                        self?.gifView.setImageData(data: imageData)
-                    }
+                    self?.gifView.setImageData(data: imageData)
                 }.store(in: &cancellables)
         }
     }

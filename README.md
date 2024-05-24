@@ -13,6 +13,13 @@
 
 SwiftUI package after the album when the user's cell phone album storage of photos and videos to reach a certain number and (for example, more than 150G, 20,000 photos and videos or so), LazyVGrid will fall into an arithmetic difficult situation, the CPU occupancy remains high, and temporarily did not find a good way to optimize, so it is packaged again with UIKit, to see the actual needs of the discretionary use 。[SwiftUI Demo](https://github.com/zjinhu/PhotoPicker_SwiftUI)
 
+Optional albums, preview editable Gif Video Image Live Photo, transparent images with adjustable background color for easy editing
+
+| <img src="Image/1.png" style="zoom:25%;" /> | <img src="Image/2.png" style="zoom:25%;" /> | <img src="Image/3.png" style="zoom:25%;" /> |
+| ------------------------------------------- | ------------------------------------------- | ------------------------------------------- |
+| <img src="Image/4.png" style="zoom:25%;" /> | <img src="Image/5.png" style="zoom:25%;" /> | <img src="Image/6.png" style="zoom:25%;" /> |
+| <img src="Image/7.png" style="zoom:25%;" /> | <img src="Image/8.png" style="zoom:25%;" /> | <img src="Image/9.png" style="zoom:25%;" /> |
+
 Open the custom album
 
 ```swift
