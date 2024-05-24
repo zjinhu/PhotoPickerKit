@@ -9,7 +9,7 @@
 
 ## 例子
 
-SwiftUI封装完相册后当用户手机内相册存储的照片视频达到一定的数量及（例如150G以上，两万张照片视频左右），LazyVGrid就会陷入一个运算艰难的境地，CPU占用居高不下，暂时没找到很好的优化办法，所以就用UIKit又封装了一遍，看实际需求酌情使用,Demo在[SwiftUI封装](https://github.com/jackiehu/PhotoPicker_SwiftUI)
+SwiftUI封装完相册后当用户手机内相册存储的照片视频达到一定的数量及（例如150G以上，两万张照片视频左右），LazyVGrid就会陷入一个运算艰难的境地，CPU占用居高不下，暂时没找到很好的优化办法，所以就用UIKit又封装了一遍，看实际需求酌情使用,Demo在[SwiftUI封装](https://github.com/zjinhu/PhotoPicker_SwiftUI)
 
 打开使用封装的相册
 
