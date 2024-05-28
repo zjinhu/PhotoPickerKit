@@ -8,11 +8,17 @@
 import SwiftUI
 import Photos
 
+enum AssetSection{
+    case main
+}
+
 public struct SelectedAsset : Identifiable, Equatable, Hashable{
     
     public let id = UUID()
     public let asset: PHAsset
     
+    public var isStatic: Bool = false
+
     /// 获取修改后Live Photo
     public var livePhoto: PHLivePhoto?
     /// 获取修改后视频URL或者Live Photo的视频URL

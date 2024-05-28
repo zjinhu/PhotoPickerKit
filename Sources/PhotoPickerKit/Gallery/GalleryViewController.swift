@@ -18,7 +18,23 @@ let cellWidth = (Screen.width - cellSpace * CGFloat(numberOfCellsInRow + 1)) / C
 
 class GalleryViewController: UIViewController {
     
-    var result: PHFetchResult<PHAsset>?
+    var photos: [SelectedAsset] = []
+    
+    lazy var snapshot = NSDiffableDataSourceSnapshot<AssetSection, SelectedAsset>()
+    
+    lazy var dataSource = UICollectionViewDiffableDataSource<AssetSection, SelectedAsset>(collectionView: gridCollectionView) { collectionView, indexPath, item in
+        
+        collectionView.register(GalleryViewCell.self, forCellWithReuseIdentifier: "cell\(indexPath.row)")
+        let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "cell\(indexPath.row)", for: indexPath)
+        guard let cell = cell as? GalleryViewCell else {
+            fatalError(
+                "Failed to dequeue a cell with identifier GalleryViewCell. "
+            )
+        }
+        cell.viewModel = self.viewModel
+        cell.asset = item
+        return cell
+    }
     
     let album: AlbumItem
     let viewModel: GalleryModel
@@ -40,8 +56,16 @@ class GalleryViewController: UIViewController {
         self.album.$result
             .receive(on: RunLoop.main)
             .sink {[weak self] result in
-                self?.result = result
-                self?.gridCollectionView.reloadData()
+                guard let self = self, let result = result else{return}
+                
+                for index in 0..<result.count{
+                    var photo = SelectedAsset(asset: result.object(at: index))
+                    photo.isStatic = viewModel.isStatic
+                    self.photos.append(photo)
+                }
+                self.snapshot.appendItems(self.photos, toSection: .main)
+                self.dataSource.apply(self.snapshot, animatingDifferences: false)
+                
             }.store(in: &cancellables)
     }
     
@@ -63,7 +87,6 @@ class GalleryViewController: UIViewController {
         let gridCollectionView = UICollectionView(frame: .zero, collectionViewLayout: layout)
         
         gridCollectionView.delegate = self
-        gridCollectionView.dataSource = self
         gridCollectionView.translatesAutoresizingMaskIntoConstraints = false
         gridCollectionView.backgroundColor = Color.backColor.toUIColor()
         return gridCollectionView
@@ -72,7 +95,8 @@ class GalleryViewController: UIViewController {
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        
+        snapshot.appendSections([.main])
+
         view.addSubview(gridCollectionView)
         gridCollectionView.topAnchor.constraint(equalTo: view.topAnchor).isActive = true
         gridCollectionView.bottomAnchor.constraint(equalTo: view.bottomAnchor).isActive = true
@@ -82,36 +106,12 @@ class GalleryViewController: UIViewController {
     
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
-        gridCollectionView.reloadData()
-    }
-}
 
-extension GalleryViewController: UICollectionViewDataSource {
-    func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
-        return album.count // 九宫格，共有9个单元格
-    }
-    
-    func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
-        collectionView.register(GalleryViewCell.self, forCellWithReuseIdentifier: "cell\(indexPath.row)")
-        let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "cell\(indexPath.row)", for: indexPath)
-        guard let cell = cell as? GalleryViewCell else {
-            fatalError(
-                "Failed to dequeue a cell with identifier GalleryViewCell. "
-            )
-        }
-        if result?.count != 0, let asset = result?[indexPath.row]{
-            cell.asset = SelectedAsset(asset: asset)
-            cell.isStatic = viewModel.isStatic
-     
-            if viewModel.maxSelectionCount != 1{
-                cell.isShowNumber = true
-                let status = getPhotoStatus(asset: asset)
-                cell.isDisabled = status.disable
-                cell.setNumber(number: status.number)
-            }
+        if !photos.isEmpty{
+            snapshot.reloadItems(photos)
+            dataSource.apply(snapshot, animatingDifferences: false)
         }
 
-        return cell
     }
 }
 
@@ -120,66 +120,31 @@ extension GalleryViewController: UICollectionViewDelegate {
     // 选中单元格时的处理
     func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
         // 处理选中逻辑
-        if let asset = result?[indexPath.row]{
-            if viewModel.maxSelectionCount == 1{
-                let picture = SelectedAsset(asset: asset)
-                viewModel.selectedAssets.append(picture)
-                if viewModel.autoCrop{
-                    viewModel.showCrop.toggle()
-                }else{
-                    viewModel.onSelectedDone.toggle()
-                }
+        guard var item = dataSource.itemIdentifier(for: indexPath) else { return }
+        
+        if viewModel.maxSelectionCount == 1{
+            viewModel.selectedAssets.append(item)
+            viewModel.selectedAsset = item
+            if viewModel.autoCrop{
+                viewModel.showCrop.toggle()
+            }else{
+                viewModel.onSelectedDone.toggle()
+            }
+            return
+        }
+        
+        if viewModel.selectedAssets.contains(where: { pic in pic.asset == item.asset }),
+           let index = viewModel.selectedAssets.firstIndex(where: { picture in picture.asset == item.asset}){
+            viewModel.selectedAssets.remove(at: index)
+        }else{
+            if viewModel.maxSelectionCount == viewModel.selectedAssets.count{
+                viewModel.showToast.toggle()
                 return
             }
-            
-            if viewModel.selectedAssets.contains(where: { pic in pic.asset == asset }),
-               let index = viewModel.selectedAssets.firstIndex(where: { picture in picture.asset == asset}){
-                viewModel.selectedAssets.remove(at: index)
-                viewModel.selectIndesPaths.remove(at: index)
- 
-                if viewModel.selectIndesPaths.count >= viewModel.maxSelectionCount - 1{
-                    collectionView.reloadData()
-                }else{
-                    collectionView.reloadItems(at: [indexPath])
-                    collectionView.reloadItems(at: viewModel.selectIndesPaths)
-                }
-                
-            }else{
-                if viewModel.maxSelectionCount == viewModel.selectedAssets.count{
-                    viewModel.showToast.toggle()
-                    return
-                }
-                let picture = SelectedAsset(asset: asset)
-                viewModel.selectedAssets.append(picture)
-                viewModel.selectIndesPaths.append(indexPath)
-                if viewModel.selectIndesPaths.count >= viewModel.maxSelectionCount - 1{
-                    collectionView.reloadData()
-                }else{
-                    collectionView.reloadItems(at: viewModel.selectIndesPaths)
-                }
-            }
+            viewModel.selectedAssets.append(item)
         }
-    }
-    
-    func getPhotoStatus(asset: PHAsset?) -> (number: Int?, disable: Bool){
-        
-        guard let asset = asset else { return (number: nil, disable: false) }
-        
-        var number: Int?
-        if viewModel.selectedAssets.contains(where: { picture in picture.asset == asset }){
-            let index = viewModel.selectedAssets.firstIndex(where: { picture in picture.asset == asset}) ?? -1
-            number = index + 1
-        }else{
-            number = nil
-        }
-        var disable: Bool
-        if viewModel.selectedAssets.count == viewModel.maxSelectionCount{
-            disable = true
-        }else{
-            disable = false
-        }
-        
-        return (number: number, disable: disable)
+        snapshot.reloadItems(photos)
+        dataSource.apply(snapshot, animatingDifferences: false)
     }
 }
 

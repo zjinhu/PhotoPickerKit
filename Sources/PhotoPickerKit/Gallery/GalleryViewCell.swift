@@ -11,6 +11,8 @@ import Combine
 import SwiftUI
 
 class GalleryViewCell: UICollectionViewCell {
+    var viewModel: GalleryModel?
+    
     var asset: SelectedAsset?{
         didSet{
             if let asset = asset{
@@ -27,12 +29,14 @@ class GalleryViewCell: UICollectionViewCell {
                     photoModel?.loadImage(size: .init(width: cellWidth, height: cellWidth))
                 }
                 
-                if !isStatic, asset.asset.mediaSubtypes.contains(.photoLive){
-                    liveView.isHidden = false
+                numberLabel.isHidden = viewModel?.maxSelectionCount == 1
+                
+                if asset.asset.mediaSubtypes.contains(.photoLive){
+                    liveView.isHidden = asset.isStatic
                 }
                 
                 if asset.asset.isGIF(){
-                    gifLabel.isHidden = false
+                    gifLabel.isHidden = asset.isStatic
                 }
                 
                 if asset.asset.mediaType == .video {
@@ -40,7 +44,7 @@ class GalleryViewCell: UICollectionViewCell {
                         .receive(on: RunLoop.main)
                         .sink {[weak self] time in
                             if let time {
-                                self?.videoView.isHidden = false
+                                self?.videoView.isHidden = asset.isStatic
                                 self?.videoView.setTitle(time.formatDuration(), for: .normal)
                             }
                      }.store(in: &cancellables)
@@ -49,7 +53,9 @@ class GalleryViewCell: UICollectionViewCell {
                         await self.photoModel?.onStart()
                     }
                 }
-
+                if viewModel?.maxSelectionCount != 1{
+                    getPhotoStatus()
+                }
             }
         }
     }
@@ -71,8 +77,8 @@ class GalleryViewCell: UICollectionViewCell {
         let imageView = UIImageView()
         imageView.contentMode = .scaleAspectFill
         imageView.translatesAutoresizingMaskIntoConstraints = false
-        imageView.backgroundColor = .gray.withAlphaComponent(0.3)
-        imageView.clipsToBounds = true
+//        imageView.backgroundColor = .gray.withAlphaComponent(0.3)
+//        imageView.clipsToBounds = true
         return imageView
     }()
     
@@ -143,18 +149,7 @@ class GalleryViewCell: UICollectionViewCell {
         view.isHidden = true
         return view
     }()
-    
-    
-    var isStatic: Bool = false
-    var isShowNumber: Bool = false{
-        didSet {
-            if isShowNumber {
-                numberLabel.isHidden = false
-            } else {
-                numberLabel.isHidden = true
-            }
-        }
-    }
+
     
     var isDisabled: Bool = false {
         didSet {
@@ -220,6 +215,27 @@ class GalleryViewCell: UICollectionViewCell {
         numberLabel.trailingAnchor.constraint(equalTo: trailingAnchor, constant: -5).isActive = true
         numberLabel.widthAnchor.constraint(equalToConstant: 20).isActive = true
         numberLabel.heightAnchor.constraint(equalToConstant: 20).isActive = true
+    }
+    
+    func getPhotoStatus(){
+
+        if let selectedAssets = viewModel?.selectedAssets,
+           selectedAssets.count == viewModel?.maxSelectionCount{
+            isDisabled = true
+        }else{
+            isDisabled = false
+        }
+
+        var number: Int?
+        if  let selectedAssets = viewModel?.selectedAssets,
+            selectedAssets.contains(where: { picture in picture.asset == asset?.asset }){
+            let index = selectedAssets.firstIndex(where: { picture in picture.asset == asset?.asset}) ?? -1
+            number = index + 1
+        }else{
+            number = nil
+        }
+        
+        setNumber(number: number)
     }
 }
 

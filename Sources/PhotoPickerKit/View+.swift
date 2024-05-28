@@ -9,6 +9,23 @@ import SwiftUI
 import Photos
 import PhotosUI
 
+public struct GalleryType : OptionSet{
+    public let rawValue: Int
+    
+    public init(rawValue: Int) {
+        self.rawValue = rawValue
+    }
+    
+    public static let image = GalleryType(rawValue: 1)
+
+    public static let livePhoto = GalleryType(rawValue: 2)
+
+    public static let gif = GalleryType(rawValue: 3)
+
+    public static let video = GalleryType(rawValue: 4)
+ 
+}
+
 public extension View {
     /// Customize the album to select photos
     /// - Parameters:
@@ -21,19 +38,19 @@ public extension View {
     ///   - selected: Bind return result
     /// - Returns: description
     @ViewBuilder func galleryPicker(isPresented: Binding<Bool>,
-                                        maxSelectionCount: Int = 0,
-                                        selectTitle: String? = nil,
-                                        autoCrop: Bool = false,
-                                        cropRatio: CGSize = .zero,
-                                        onlyImage: Bool = false,
-                                        selected: Binding<[SelectedAsset]>) -> some View {
+                                    maxSelectionCount: Int = 0,
+                                    selectTitle: String? = nil,
+                                    autoCrop: Bool = false,
+                                    cropRatio: CGSize = .zero,
+                                    onlyImage: Bool = false,
+                                    selected: Binding<[SelectedAsset]>) -> some View {
         fullScreenCover(isPresented: isPresented) {
             GalleryPageView(maxSelectionCount: maxSelectionCount,
-                                    selectTitle: selectTitle,
-                                    autoCrop: autoCrop,
-                                    cropRatio: cropRatio,
-                                    onlyImage: onlyImage,
-                                    selected: selected)
+                            selectTitle: selectTitle,
+                            autoCrop: autoCrop,
+                            cropRatio: cropRatio,
+                            onlyImage: onlyImage,
+                            selected: selected)
             .ignoresSafeArea()
         }
     }

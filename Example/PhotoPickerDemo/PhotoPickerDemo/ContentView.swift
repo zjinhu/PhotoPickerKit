@@ -40,11 +40,11 @@ struct ContentView: View {
                         .frame(height: 50)
                 }
                 .galleryPicker(isPresented: $isPresentedGallery,
-                                   maxSelectionCount: 9,
+                                   maxSelectionCount: 1,
                                    selectTitle: "Videos",
                                    autoCrop: true,
                                    cropRatio: .init(width: 1, height: 1),
-                                   onlyImage: false,
+                                   onlyImage: true,
                                    selected: $selectItem.pictures)
                 
                 Button {
@@ -152,7 +152,7 @@ struct ContentView: View {
             }
         }
         .editPicker(isPresented: $isPresentedCrop,
-                    cropRatio: .init(width: 10, height: 1),
+                    cropRatio: .init(width: 1, height: 1),
                     asset: selectItem.selectedAsset) { asset in
             selectItem.pictures.replaceSubrange(selectItem.selectedIndex...selectItem.selectedIndex, with: [asset])
         }

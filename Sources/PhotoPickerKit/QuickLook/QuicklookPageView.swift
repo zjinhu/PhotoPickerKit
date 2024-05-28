@@ -21,9 +21,11 @@ class QuicklookPageView: UIView {
         self.viewModel.$selectedAssets
             .receive(on: RunLoop.main)
             .sink {[weak self] array in
-
-                self?.collectionView.reloadData()
-                
+                guard let self = self else{return}
+                self.snapshot.deleteAllItems()
+                self.snapshot.appendSections([.main])
+                self.snapshot.appendItems(array, toSection: .main)
+                self.dataSource.apply(self.snapshot, animatingDifferences: false)
             }.store(in: &cancellables)
         
         self.viewModel.$previewSelectIndex
@@ -34,6 +36,40 @@ class QuicklookPageView: UIView {
                 self?.collectionView.scrollToItem(at: indexPath, at: .centeredHorizontally, animated: true)
 
             }.store(in: &cancellables)
+    }
+    
+    lazy var snapshot = NSDiffableDataSourceSnapshot<AssetSection, SelectedAsset>()
+    
+    lazy var dataSource = UICollectionViewDiffableDataSource<AssetSection, SelectedAsset>(collectionView: collectionView) { collectionView, indexPath, item in
+        
+            if item.isStatic{
+                let cell = collectionView.useCell(QuicklookImageCell.self, indexPath: indexPath)
+                cell.setSelectedAsset(asset: item)
+                return cell
+            }else{
+                switch item.fetchPHAssetType() {
+                case .image:
+                    let cell = collectionView.useCell(QuicklookImageCell.self, indexPath: indexPath)
+                    cell.setSelectedAsset(asset: item)
+                    return cell
+                case .gif:
+                    let cell = collectionView.useCell(QuicklookGifCell.self, indexPath: indexPath)
+                    cell.setSelectedAsset(asset: item)
+                    return cell
+                case .video:
+                    let cell = collectionView.useCell(QuicklookVideoCell.self, indexPath: indexPath)
+                    cell.setSelectedAsset(asset: item)
+                    return cell
+                case .livePhoto:
+                    let cell = collectionView.useCell(QuicklookLivePhotoCell.self, indexPath: indexPath)
+                    cell.setSelectedAsset(asset: item)
+                    return cell
+                default:
+                    break
+                }
+            }
+        
+        return UICollectionViewCell()
     }
     
     required init?(coder: NSCoder) {
@@ -58,7 +94,6 @@ class QuicklookPageView: UIView {
  
         let collectionView = UICollectionView(frame: .zero, collectionViewLayout: layout)
         collectionView.isPagingEnabled = true
-        collectionView.dataSource = self
         collectionView.delegate = self
         collectionView.translatesAutoresizingMaskIntoConstraints = false
         collectionView.showsHorizontalScrollIndicator = false
@@ -79,53 +114,14 @@ class QuicklookPageView: UIView {
     }
 }
 
-extension QuicklookPageView: UICollectionViewDataSource {
-    func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
-        return viewModel.selectedAssets.count
-    }
-    
+extension QuicklookPageView: UICollectionViewDelegate {
+
     func collectionView(_ collectionView: UICollectionView, didEndDisplaying cell: UICollectionViewCell, forItemAt indexPath: IndexPath) {
         if let videoCell = cell as? QuicklookVideoCell {
             videoCell.isPlaying = false
             videoCell.player.pause()
             videoCell.player.seek(to: .zero)
         }
-    }
-    func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
- 
-        if viewModel.selectedAssets.count != 0{
-            let asset = viewModel.selectedAssets[indexPath.row]
-
-            if viewModel.isStatic{
-                let cell = collectionView.useCell(QuicklookImageCell.self, indexPath: indexPath)
-                cell.setSelectedAsset(asset: asset)
-                return cell
-            }else{
-                switch asset.fetchPHAssetType() {
-                case .image:
-                    let cell = collectionView.useCell(QuicklookImageCell.self, indexPath: indexPath)
-                    cell.setSelectedAsset(asset: asset)
-                    return cell
-                case .gif:
-                    let cell = collectionView.useCell(QuicklookGifCell.self, indexPath: indexPath)
-                    cell.setSelectedAsset(asset: asset)
-                    return cell
-                case .video:
-                    let cell = collectionView.useCell(QuicklookVideoCell.self, indexPath: indexPath)
-                    cell.setSelectedAsset(asset: asset)
-                    return cell
-                case .livePhoto:
-                    let cell = collectionView.useCell(QuicklookLivePhotoCell.self, indexPath: indexPath)
-                    cell.setSelectedAsset(asset: asset)
-                    return cell
-                default:
-                    break
-                }
-            }
-
-        }
-
-        return UICollectionViewCell()
     }
 }
 

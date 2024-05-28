@@ -128,23 +128,16 @@ class QuicklookViewController: UIViewController {
     @objc
     func edit(){
         // MARK: - 点击编辑按钮开始制造数据
-        let sset = viewModel.selectedAssets[viewModel.previewSelectIndex]
+        var sset = viewModel.selectedAssets[viewModel.previewSelectIndex]
         switch sset.fetchPHAssetType(){
-        case .image:
-            
-            if let image = sset.asset.toImage(){
-                viewModel.selectedAsset = sset
-                viewModel.selectedAsset?.image = image
-                viewModel.isPresentedEdit.toggle()
-            }
-            
+
         case .video:
             
             Task{
                 if let url = await sset.asset.getVideoUrl(){
                     await MainActor.run{
+                        sset.videoUrl = url
                         viewModel.selectedAsset = sset
-                        viewModel.selectedAsset?.videoUrl = url
                         viewModel.isPresentedEdit.toggle()
                     }
                 }
@@ -155,8 +148,8 @@ class QuicklookViewController: UIViewController {
             sset.asset.getLivePhotoVideoUrl { url in
                 if let url {
                     DispatchQueue.main.async {
+                        sset.videoUrl = url
                         self.viewModel.selectedAsset = sset
-                        self.viewModel.selectedAsset?.videoUrl = url
                         self.viewModel.isPresentedEdit.toggle()
                     }
                 }
@@ -167,14 +160,20 @@ class QuicklookViewController: UIViewController {
             if let imageData = sset.asset.toImageData(){
                 GifTool.createVideoFromGif(gifData: imageData) { url in
                     DispatchQueue.main.async {
+                        sset.gifVideoUrl = url
+                        sset.imageData = imageData
                         self.viewModel.selectedAsset = sset
-                        self.viewModel.selectedAsset?.imageData = imageData
-                        self.viewModel.selectedAsset?.gifVideoUrl = url
                         self.viewModel.isPresentedEdit.toggle()
                     }
                 }
             }
-        default: break
+        default: 
+            
+            if let image = sset.asset.toImage(){
+                sset.image = image
+                viewModel.selectedAsset = sset
+                viewModel.isPresentedEdit.toggle()
+            }
         }
     }
     

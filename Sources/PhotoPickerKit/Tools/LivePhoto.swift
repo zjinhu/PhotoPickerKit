@@ -13,7 +13,7 @@ class LivePhoto {
         }
     }
     /// Generates a PHLivePhoto from an image and video.  Also returns the paired image and video.
-    public class func generate(from imageURL: URL?, videoURL: URL, progress: @escaping (CGFloat) -> Void, completion: @escaping (PHLivePhoto?, LivePhotoResources?) -> Void) {
+    public class func generate(from imageURL: URL? = nil, videoURL: URL, progress: @escaping (CGFloat) -> Void, completion: @escaping (PHLivePhoto?, LivePhotoResources?) -> Void) {
         queue.async {
             shared.generate(from: imageURL, videoURL: videoURL, progress: progress, completion: completion)
         }

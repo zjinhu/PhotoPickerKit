@@ -15,7 +15,6 @@ struct GalleryPageView: View {
     @State private var isNavigationCrop = false
     @ObservedObject var viewModel = GalleryModel()
     @Binding var selected: [SelectedAsset]
-    
     let selectTitle: String?
     
     init(maxSelectionCount: Int = 0,
@@ -45,25 +44,23 @@ struct GalleryPageView: View {
                 } label: {
                     EmptyView()
                 }
-                
-//                NavigationLink(isActive: $isNavigationCrop) {
-//                    if let asset = viewModel.selectedAssets.first{
-//                        ImageCropView(asset: asset,
-//                                      cropRatio: viewModel.cropRatio,
-//                                      cancle: {
-//                            viewModel.selectedAssets.removeAll()
-//                        },
-//                                      done: { asset in
-//                            viewModel.selectedAssets.replaceSubrange(0...0, with: [asset])
-//                            viewModel.onSelectedDone.toggle()
-//                        })
-//                        .navigationBarHidden(true)
-//                        .ignoresSafeArea()
-//                    }
-//
-//                } label: {
-//                    EmptyView()
-//                }
+
+                NavigationLink(isActive: $isNavigationCrop) {
+                    if let asset = viewModel.selectedAsset{
+                        EditView(asset: asset,
+                                 cropRatio: viewModel.cropRatio){ replace in
+                            viewModel.selectedAssets.removeAll()
+                            viewModel.selectedAssets.append(replace)
+                            selected = viewModel.selectedAssets
+                            dismiss()
+                        }
+                        .navigationBarHidden(true)
+                        .ignoresSafeArea()
+                    }
+
+                } label: {
+                    EmptyView()
+                }
                 
                 GalleryPageHostView()
                     .environmentObject(viewModel)
@@ -95,8 +92,52 @@ struct GalleryPageView: View {
             }
         })
         .onChange(of: viewModel.showCrop, perform: { newValue in
-            if viewModel.selectedAssets.isEmpty{}else{
-                isNavigationCrop.toggle()
+            if let sset = viewModel.selectedAsset{
+
+                switch sset.fetchPHAssetType(){
+                case .video:
+                    Task{
+                        if let url = await sset.asset.getVideoUrl(){
+                            await MainActor.run{
+                                viewModel.selectedAsset = sset
+                                viewModel.selectedAsset?.videoUrl = url
+                                isNavigationCrop.toggle()
+                            }
+                        }
+                    }
+                case .livePhoto:
+
+                    sset.asset.getLivePhotoVideoUrl { url in
+                        if let url {
+                            DispatchQueue.main.async {
+                                viewModel.selectedAsset = sset
+                                viewModel.selectedAsset?.videoUrl = url
+                                isNavigationCrop.toggle()
+                            }
+                        }
+                    }
+                    
+                case .gif:
+                    
+                    if let imageData = sset.asset.toImageData(){
+                        GifTool.createVideoFromGif(gifData: imageData) { url in
+                            DispatchQueue.main.async {
+                                viewModel.selectedAsset = sset
+                                viewModel.selectedAsset?.imageData = imageData
+                                viewModel.selectedAsset?.gifVideoUrl = url
+                                isNavigationCrop.toggle()
+                            }
+                        }
+                    }
+                    
+                default:
+                    
+                    if let image = sset.asset.toImage(){
+                        viewModel.selectedAsset = sset
+                        viewModel.selectedAsset?.image = image
+                        isNavigationCrop.toggle()
+                    }
+                }
             }
         })
         .toast(isPresenting: $viewModel.showToast){

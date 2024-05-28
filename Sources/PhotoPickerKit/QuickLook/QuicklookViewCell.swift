@@ -1,6 +1,6 @@
 //
 //  QuicklookViewCell.swift
-//  
+//
 //
 //  Created by FunWidget on 2024/5/23.
 //
@@ -12,7 +12,7 @@ import Combine
 import SwiftUI
 class QuicklookCell: UICollectionViewCell{
     private var cancellables: Set<AnyCancellable> = []
- 
+    
     var asset: SelectedAsset?{
         didSet{
             if let asset = asset{
@@ -28,12 +28,12 @@ class QuicklookCell: UICollectionViewCell{
                     photoModel?.loadImage(size: .init(width: cellWidth, height: cellWidth))
                 }
                 
-                if !isStatic, asset.asset.mediaSubtypes.contains(.photoLive){
-                    liveView.isHidden = false
+                if asset.asset.mediaSubtypes.contains(.photoLive){
+                    liveView.isHidden = asset.isStatic
                 }
                 
                 if asset.asset.isGIF(){
-                    gifLabel.isHidden = false
+                    gifLabel.isHidden = asset.isStatic
                 }
                 
                 if asset.asset.mediaType == .video {
@@ -41,7 +41,7 @@ class QuicklookCell: UICollectionViewCell{
                         .receive(on: RunLoop.main)
                         .sink {[weak self] time in
                             if let time {
-                                self?.videoView.isHidden = false
+                                self?.videoView.isHidden = asset.isStatic
                                 self?.videoView.setTitle(time.formatDuration(), for: .normal)
                             }
                         }.store(in: &cancellables)
@@ -101,8 +101,6 @@ class QuicklookCell: UICollectionViewCell{
         return view
     }()
     
-    var isStatic: Bool = false
-    
     override init(frame: CGRect) {
         super.init(frame: frame)
         setupCellViews()
@@ -140,7 +138,7 @@ class QuicklookCell: UICollectionViewCell{
 
 class QuicklookImageCell: UICollectionViewCell{
     private var cancellables: Set<AnyCancellable> = []
-
+    
     func setSelectedAsset(asset: SelectedAsset){
         if let ima = asset.image{
             self.imageView.image = ima
@@ -185,7 +183,7 @@ class QuicklookImageCell: UICollectionViewCell{
 
 class QuicklookGifCell: UICollectionViewCell {
     private var cancellables: Set<AnyCancellable> = []
- 
+    
     func setSelectedAsset(asset: SelectedAsset){
         if let imageData = asset.imageData{
             gifView.setImageData(data: imageData)
@@ -230,17 +228,17 @@ class QuicklookGifCell: UICollectionViewCell {
         let view = UIButton()
         addSubview(view)
         view.frame = self.bounds
-//        view.addTarget(self, action: #selector(didBtn(button:)), for: .touchUpInside)
+        //        view.addTarget(self, action: #selector(didBtn(button:)), for: .touchUpInside)
     }
     
-//    @objc
-//    func didBtn(button: UIButton) {
-//        if gifView.isAnimating{
-//            gifView.stopAnimating()
-//        }else{
-//            gifView.startAnimating()
-//        }
-//    }
+    //    @objc
+    //    func didBtn(button: UIButton) {
+    //        if gifView.isAnimating{
+    //            gifView.stopAnimating()
+    //        }else{
+    //            gifView.startAnimating()
+    //        }
+    //    }
 }
 
 class QuicklookLivePhotoCell: UICollectionViewCell {
@@ -306,7 +304,9 @@ class QuicklookVideoCell: UICollectionViewCell {
     private var cancellables: Set<AnyCancellable> = []
     func setSelectedAsset(asset: SelectedAsset){
         if let url = asset.videoUrl{
-            photoModel?.playerItem = AVPlayerItem(url: url)
+            let playerItem = AVPlayerItem(url: url)
+            photoModel?.playerItem = playerItem
+            player.replaceCurrentItem(with: playerItem)
         }else{
             photoModel = VideoViewModel(asset: asset)
             
@@ -364,7 +364,7 @@ class QuicklookVideoCell: UICollectionViewCell {
         
         NotificationCenter.default.addObserver(forName: .AVPlayerItemDidPlayToEndTime, object: player.currentItem, queue: .main) { [self] _ in
             self.isPlaying = false
-            self.player.seek(to: .zero) 
+            self.player.seek(to: .zero)
         }
     }
     
