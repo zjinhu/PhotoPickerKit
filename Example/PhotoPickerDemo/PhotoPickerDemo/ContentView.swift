@@ -92,14 +92,18 @@ struct ContentView: View {
                                 
                             case .gif:
                                 
-                                if let image = picture.asset.toImageData(){
-                                    picture.imageData = image
-                                    selectItem.selectedAsset = picture
-                                    isPresentedCrop.toggle()
+                                if let imageData = picture.asset.toImageData(){
+                                    GifTool.createVideoFromGif(gifData: imageData) { url in
+                                        DispatchQueue.main.async {
+                                            picture.gifVideoUrl = url
+//                                            picture.imageData = imageData
+                                            selectItem.selectedAsset = picture
+                                            isPresentedCrop.toggle()
+                                        }
+                                    }
                                 }
                                 
                             case .video:
-                                
                                 
                                 Task{
                                     if let url = await picture.asset.getVideoUrl(){
@@ -150,10 +154,10 @@ struct ContentView: View {
                                 }
                             
                         }
-                        .tag(index)
+                        .id(UUID())
                     }
                 }
-                .id(UUID())
+                
             }
         }
         .editPicker(isPresented: $isPresentedCrop,

@@ -25,7 +25,7 @@ struct QLGifView: View {
             }
         }
         .onAppear{
-            if let _ = gifModel.imageData{}else{
+            if let _ = gifModel.imageData{ }else{
                 loadAsset()
             }
         }
@@ -35,8 +35,11 @@ struct QLGifView: View {
     }
     
     private func loadAsset() {
-        
-        gifModel.loadImageData()
+        if let data = asset.imageData{
+            gifModel.imageData = data
+        }else{
+            gifModel.loadImageData()
+        }
     }
 }
 

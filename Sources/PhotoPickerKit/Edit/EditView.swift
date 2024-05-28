@@ -109,12 +109,7 @@ public struct EditView: UIViewControllerRepresentable {
             switch parent.selectedAsset.assetType {
 
             case .livePhoto:
-//                let temporaryDirectoryURL = FileManager.default.temporaryDirectory
-//                let imageFileURL = temporaryDirectoryURL.appendingPathComponent("livephoto.png")
-//                try? FileManager.default.removeItem(at: imageFileURL)
-//                
-//                let imageData = asset.result?.image?.pngData()
-//                try? imageData?.write(to: imageFileURL)
+
                 switch asset.result{
                 case .video(let result, _):
                     LivePhoto.generate(videoURL: result.url) { progress in
@@ -144,7 +139,7 @@ public struct EditView: UIViewControllerRepresentable {
                 case .video(let result, _):
                     GifTool.createGifData(from: result.url) { date in
                         self.parent.selectedAsset.imageData = date
-                        self.parent.selectedAsset.gifVideoUrl = result.url
+//                        self.parent.selectedAsset.gifVideoUrl = result.url
                         self.parent.editDone(self.parent.selectedAsset)
                         self.parent.dismiss()
                     }

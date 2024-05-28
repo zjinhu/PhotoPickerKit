@@ -25,6 +25,7 @@ class QuicklookPageView: UIView {
                 self.snapshot.deleteAllItems()
                 self.snapshot.appendSections([.main])
                 self.snapshot.appendItems(array, toSection: .main)
+                self.snapshot.reloadItems(array)
                 self.dataSource.apply(self.snapshot, animatingDifferences: false)
             }.store(in: &cancellables)
         
