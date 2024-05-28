@@ -82,22 +82,22 @@ struct GalleryPageView: View {
                 }
             }
         }
-        .onChange(of: viewModel.onSelectedDone, perform: { newValue in
+        .onChange(of: viewModel.onSelectedDone){ newValue in
             for item in viewModel.selectedAssets{
                 item.isStatic = viewModel.isStatic
             }
             selected = viewModel.selectedAssets
             dismiss()
-        })
-        .onChange(of: viewModel.showQuicklook, perform: { newValue in
+        }
+        .onChange(of: viewModel.showQuicklook){ newValue in
             if viewModel.selectedAssets.isEmpty{}else{
                 for item in viewModel.selectedAssets{
                     item.isStatic = viewModel.isStatic
                 }
                 isNavigationQuickLook.toggle()
             }
-        })
-        .onChange(of: viewModel.showCrop, perform: { newValue in
+        }
+        .onChange(of: viewModel.showCrop){ newValue in
             if let sset = viewModel.selectedAsset{
                     switch sset.fetchPHAssetType(){
                     case .video:
@@ -144,7 +144,7 @@ struct GalleryPageView: View {
                         }
                     }
             }
-        })
+        }
         .toast(isPresenting: $viewModel.showToast){
             AlertToast(displayMode: .hud,
                        type: .systemImage("exclamationmark.circle.fill", .alertOrange),
