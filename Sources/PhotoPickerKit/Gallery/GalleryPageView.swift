@@ -83,61 +83,66 @@ struct GalleryPageView: View {
             }
         }
         .onChange(of: viewModel.onSelectedDone, perform: { newValue in
+            for item in viewModel.selectedAssets{
+                item.isStatic = viewModel.isStatic
+            }
             selected = viewModel.selectedAssets
             dismiss()
         })
         .onChange(of: viewModel.showQuicklook, perform: { newValue in
             if viewModel.selectedAssets.isEmpty{}else{
+                for item in viewModel.selectedAssets{
+                    item.isStatic = viewModel.isStatic
+                }
                 isNavigationQuickLook.toggle()
             }
         })
         .onChange(of: viewModel.showCrop, perform: { newValue in
             if let sset = viewModel.selectedAsset{
-
-                switch sset.fetchPHAssetType(){
-                case .video:
-                    Task{
-                        if let url = await sset.asset.getVideoUrl(){
-                            await MainActor.run{
-                                viewModel.selectedAsset = sset
-                                viewModel.selectedAsset?.videoUrl = url
-                                isNavigationCrop.toggle()
+                    switch sset.fetchPHAssetType(){
+                    case .video:
+                        Task{
+                            if let url = await sset.asset.getVideoUrl(){
+                                await MainActor.run{
+                                    viewModel.selectedAsset = sset
+                                    viewModel.selectedAsset?.videoUrl = url
+                                    isNavigationCrop.toggle()
+                                }
                             }
                         }
-                    }
-                case .livePhoto:
-
-                    sset.asset.getLivePhotoVideoUrl { url in
-                        if let url {
-                            DispatchQueue.main.async {
-                                viewModel.selectedAsset = sset
-                                viewModel.selectedAsset?.videoUrl = url
-                                isNavigationCrop.toggle()
+                    case .livePhoto:
+                        
+                        sset.asset.getLivePhotoVideoUrl { url in
+                            if let url {
+                                DispatchQueue.main.async {
+                                    viewModel.selectedAsset = sset
+                                    viewModel.selectedAsset?.videoUrl = url
+                                    isNavigationCrop.toggle()
+                                }
                             }
                         }
-                    }
-                    
-                case .gif:
-                    
-                    if let imageData = sset.asset.toImageData(){
-                        GifTool.createVideoFromGif(gifData: imageData) { url in
-                            DispatchQueue.main.async {
-                                viewModel.selectedAsset = sset
-                                viewModel.selectedAsset?.imageData = imageData
-                                viewModel.selectedAsset?.gifVideoUrl = url
-                                isNavigationCrop.toggle()
+                        
+                    case .gif:
+                        
+                        if let imageData = sset.asset.toImageData(){
+                            GifTool.createVideoFromGif(gifData: imageData) { url in
+                                DispatchQueue.main.async {
+                                    viewModel.selectedAsset = sset
+                                    viewModel.selectedAsset?.imageData = imageData
+                                    viewModel.selectedAsset?.gifVideoUrl = url
+                                    isNavigationCrop.toggle()
+                                }
                             }
                         }
+                        
+                    default:
+                        
+                        if let image = sset.asset.toImage(){
+                            viewModel.selectedAsset = sset
+                            viewModel.selectedAsset?.image = image
+                            isNavigationCrop.toggle()
+                        }
                     }
-                    
-                default:
-                    
-                    if let image = sset.asset.toImage(){
-                        viewModel.selectedAsset = sset
-                        viewModel.selectedAsset?.image = image
-                        isNavigationCrop.toggle()
-                    }
-                }
             }
         })
         .toast(isPresenting: $viewModel.showToast){

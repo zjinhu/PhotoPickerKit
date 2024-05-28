@@ -12,7 +12,15 @@ enum AssetSection{
     case main
 }
 
-public struct SelectedAsset : Identifiable, Equatable, Hashable{
+public class SelectedAsset : Identifiable, Equatable, Hashable{
+    
+    public static func == (lhs: SelectedAsset, rhs: SelectedAsset) -> Bool {
+        lhs.id == rhs.id
+    }
+    
+    public func hash(into hasher: inout Hasher) {
+        hasher.combine(id)
+    }
     
     public let id = UUID()
     public let asset: PHAsset
@@ -34,6 +42,11 @@ public struct SelectedAsset : Identifiable, Equatable, Hashable{
     }
     
     public var assetType: SelectedAssetType{
+        
+        if isStatic{
+            return .image
+        }
+        
         if asset.isGIF(){
             return .gif
         }
@@ -59,6 +72,11 @@ public struct SelectedAsset : Identifiable, Equatable, Hashable{
     }
     
     public func fetchPHAssetType() -> SelectedAssetType {
+        
+        if isStatic{
+            return .image
+        }
+        
         if asset.isGIF(){
             return .gif
         }

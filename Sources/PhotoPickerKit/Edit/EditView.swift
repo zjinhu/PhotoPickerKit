@@ -56,7 +56,7 @@ public struct EditView: UIViewControllerRepresentable {
         }else{
             config.cropSize.isFixedRatio = false
         }
-        
+
         switch selectedAsset.assetType {
         case .livePhoto:
             if let videoUrl = selectedAsset.videoUrl{
@@ -105,17 +105,16 @@ public struct EditView: UIViewControllerRepresentable {
         ///   - editorViewController: 对应的 EditorViewController
         ///   - result: 编辑后的数据
         public func editorViewController(_ editorViewController: EditorViewController, didFinish asset: EditorAsset) {
+
             switch parent.selectedAsset.assetType {
 
             case .livePhoto:
-//                
 //                let temporaryDirectoryURL = FileManager.default.temporaryDirectory
 //                let imageFileURL = temporaryDirectoryURL.appendingPathComponent("livephoto.png")
 //                try? FileManager.default.removeItem(at: imageFileURL)
 //                
 //                let imageData = asset.result?.image?.pngData()
 //                try? imageData?.write(to: imageFileURL)
-//                
                 switch asset.result{
                 case .video(let result, _):
                     LivePhoto.generate(videoURL: result.url) { progress in

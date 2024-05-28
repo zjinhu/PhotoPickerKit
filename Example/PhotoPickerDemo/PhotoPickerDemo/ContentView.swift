@@ -40,11 +40,11 @@ struct ContentView: View {
                         .frame(height: 50)
                 }
                 .galleryPicker(isPresented: $isPresentedGallery,
-                                   maxSelectionCount: 1,
+                                   maxSelectionCount: 7,
                                    selectTitle: "Videos",
                                    autoCrop: true,
                                    cropRatio: .init(width: 1, height: 1),
-                                   onlyImage: true,
+                                   onlyImage: false,
                                    selected: $selectItem.pictures)
                 
                 Button {
@@ -85,16 +85,16 @@ struct ContentView: View {
                         
                         
                         Button {
-                            
+ 
                             selectItem.selectedIndex = index
                             
                             switch picture.fetchPHAssetType(){
                                 
-                            case .image:
+                            case .gif:
                                 
-                                if let image = picture.asset.toImage(){
+                                if let image = picture.asset.toImageData(){
+                                    picture.imageData = image
                                     selectItem.selectedAsset = picture
-                                    selectItem.selectedAsset?.image = image
                                     isPresentedCrop.toggle()
                                 }
                                 
@@ -104,8 +104,8 @@ struct ContentView: View {
                                 Task{
                                     if let url = await picture.asset.getVideoUrl(){
                                         await MainActor.run{
+                                            picture.videoUrl = url
                                             selectItem.selectedAsset = picture
-                                            selectItem.selectedAsset?.videoUrl = url
                                             isPresentedCrop.toggle()
                                         }
                                     }
@@ -117,36 +117,41 @@ struct ContentView: View {
                                 picture.asset.getLivePhotoVideoUrl { url in
                                     if let url {
                                         DispatchQueue.main.async {
+                                            picture.videoUrl = url
                                             selectItem.selectedAsset = picture
-                                            selectItem.selectedAsset?.videoUrl = url
                                             isPresentedCrop.toggle()
                                         }
                                     }
                                 }
                                 
                                 
-                            default: break
+                            default: 
+                                
+                                if let image = picture.asset.toImage(){
+                                    picture.image = image
+                                    selectItem.selectedAsset = picture
+                                    isPresentedCrop.toggle()
+                                }
                             }
                             
                         } label: {
-//                            QLImageView(asset: picture)
-                            switch picture.fetchPHAssetType(){
-                            case .image:
-                                QLImageView(asset: picture)
-                            case .livePhoto:
-                                QLivePhotoView(asset: picture)
-                                    .frame(height: Screen.width)
-                            case .video:
-                                QLVideoView(asset: picture)
-                                    .frame(height: 200)
-                            default:
-                                EmptyView()
-                            }
+
+                                switch picture.fetchPHAssetType(){
+                                case .gif:
+                                    QLGifView(asset: picture)
+                                case .livePhoto:
+                                    QLivePhotoView(asset: picture)
+                                        .frame(height: Screen.width)
+                                case .video:
+                                    QLVideoView(asset: picture)
+                                        .frame(height: 200)
+                                default:
+                                    QLImageView(asset: picture)
+                                }
+                            
                         }
                         .tag(index)
-                        
                     }
-                    
                 }
                 .id(UUID())
             }

@@ -77,7 +77,7 @@ class GalleryViewCell: UICollectionViewCell {
         let imageView = UIImageView()
         imageView.contentMode = .scaleAspectFill
         imageView.translatesAutoresizingMaskIntoConstraints = false
-//        imageView.backgroundColor = .gray.withAlphaComponent(0.3)
+        imageView.backgroundColor = .gray.withAlphaComponent(0.3)
 //        imageView.clipsToBounds = true
         return imageView
     }()

@@ -42,11 +42,6 @@ class QuicklookPageView: UIView {
     
     lazy var dataSource = UICollectionViewDiffableDataSource<AssetSection, SelectedAsset>(collectionView: collectionView) { collectionView, indexPath, item in
         
-            if item.isStatic{
-                let cell = collectionView.useCell(QuicklookImageCell.self, indexPath: indexPath)
-                cell.setSelectedAsset(asset: item)
-                return cell
-            }else{
                 switch item.fetchPHAssetType() {
                 case .image:
                     let cell = collectionView.useCell(QuicklookImageCell.self, indexPath: indexPath)
@@ -67,7 +62,6 @@ class QuicklookPageView: UIView {
                 default:
                     break
                 }
-            }
         
         return UICollectionViewCell()
     }
