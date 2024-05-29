@@ -19,7 +19,7 @@ public struct EditorConfiguration: IndicatorTypeConfig, PhotoHUDConfig {
  
     /// hide status bar
     /// 隐藏状态栏
-    public var prefersStatusBarHidden: Bool = false
+    public var prefersStatusBarHidden: Bool = true
     
     /// Rotation is allowed, and rotation can only be disabled in full screen
     /// 允许旋转，全屏情况下才可以禁止旋转

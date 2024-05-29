@@ -1,6 +1,6 @@
 //
 //  SwiftUIView.swift
-//  
+//
 //
 //  Created by FunWidget on 2024/5/16.
 //
@@ -44,7 +44,7 @@ struct GalleryPageView: View {
                 } label: {
                     EmptyView()
                 }
-
+                
                 NavigationLink(isActive: $isNavigationCrop) {
                     if let asset = viewModel.selectedAsset{
                         EditView(asset: asset,
@@ -54,12 +54,13 @@ struct GalleryPageView: View {
                             selected = viewModel.selectedAssets
                             dismiss()
                         }
-                        .navigationBarHidden(true)
-                        .background(
-                           Color.black.ignoresSafeArea()
-                        )
+                                 .statusBar(hidden: true)
+                                 .navigationBarHidden(true)
+                                 .background(
+                                    Color.black.ignoresSafeArea()
+                                 )
                     }
-
+                    
                 } label: {
                     EmptyView()
                 }
@@ -101,50 +102,50 @@ struct GalleryPageView: View {
         }
         .onChange(of: viewModel.showCrop){ newValue in
             if let sset = viewModel.selectedAsset{
-                    switch sset.fetchPHAssetType(){
-                    case .video:
-                        Task{
-                            if let url = await sset.asset.getVideoUrl(){
-                                await MainActor.run{
-                                    viewModel.selectedAsset = sset
-                                    viewModel.selectedAsset?.videoUrl = url
-                                    isNavigationCrop.toggle()
-                                }
+                switch sset.fetchPHAssetType(){
+                case .video:
+                    Task{
+                        if let url = await sset.asset.getVideoUrl(){
+                            await MainActor.run{
+                                viewModel.selectedAsset = sset
+                                viewModel.selectedAsset?.videoUrl = url
+                                isNavigationCrop.toggle()
                             }
-                        }
-                    case .livePhoto:
-                        
-                        sset.asset.getLivePhotoVideoUrl { url in
-                            if let url {
-                                DispatchQueue.main.async {
-                                    viewModel.selectedAsset = sset
-                                    viewModel.selectedAsset?.videoUrl = url
-                                    isNavigationCrop.toggle()
-                                }
-                            }
-                        }
-                        
-                    case .gif:
-                        
-                        if let imageData = sset.asset.toImageData(){
-                            GifTool.createVideoFromGif(gifData: imageData) { url in
-                                DispatchQueue.main.async {
-                                    viewModel.selectedAsset = sset
-                                    viewModel.selectedAsset?.imageData = imageData
-                                    viewModel.selectedAsset?.gifVideoUrl = url
-                                    isNavigationCrop.toggle()
-                                }
-                            }
-                        }
-                        
-                    default:
-                        
-                        if let image = sset.asset.toImage(){
-                            viewModel.selectedAsset = sset
-                            viewModel.selectedAsset?.image = image
-                            isNavigationCrop.toggle()
                         }
                     }
+                case .livePhoto:
+                    
+                    sset.asset.getLivePhotoVideoUrl { url in
+                        if let url {
+                            DispatchQueue.main.async {
+                                viewModel.selectedAsset = sset
+                                viewModel.selectedAsset?.videoUrl = url
+                                isNavigationCrop.toggle()
+                            }
+                        }
+                    }
+                    
+                case .gif:
+                    
+                    if let imageData = sset.asset.toImageData(){
+                        GifTool.createVideoFromGif(gifData: imageData) { url in
+                            DispatchQueue.main.async {
+                                viewModel.selectedAsset = sset
+                                viewModel.selectedAsset?.imageData = imageData
+                                viewModel.selectedAsset?.gifVideoUrl = url
+                                isNavigationCrop.toggle()
+                            }
+                        }
+                    }
+                    
+                default:
+                    
+                    if let image = sset.asset.toImage(){
+                        viewModel.selectedAsset = sset
+                        viewModel.selectedAsset?.image = image
+                        isNavigationCrop.toggle()
+                    }
+                }
             }
         }
         .toast(isPresenting: $viewModel.showToast){

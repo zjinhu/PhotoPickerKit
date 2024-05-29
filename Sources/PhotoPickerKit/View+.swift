@@ -61,6 +61,7 @@ public extension View {
                          cropVideoFixTime: cropVideoFixTime,
                          cropRatio: cropRatio,
                          done: returnAsset)
+                .statusBar(hidden: true)
                 .background(
                    Color.black.ignoresSafeArea()
                 )
