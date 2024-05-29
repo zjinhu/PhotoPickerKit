@@ -61,7 +61,9 @@ public extension View {
                          cropVideoFixTime: cropVideoFixTime,
                          cropRatio: cropRatio,
                          done: returnAsset)
-                .ignoresSafeArea()
+                .background(
+                   Color.black.ignoresSafeArea()
+                )
             }else{
                 EmptyView()
             }

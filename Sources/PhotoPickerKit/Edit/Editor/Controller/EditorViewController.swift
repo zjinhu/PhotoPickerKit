@@ -512,7 +512,7 @@ open class EditorViewController: HXBaseViewController {
         portraitConstraints = [
             self.stackView.leadingAnchor.constraint(equalTo: self.view.leadingAnchor, constant: 16),
             self.stackView.trailingAnchor.constraint(equalTo: self.view.trailingAnchor, constant: -16),
-            self.stackView.bottomAnchor.constraint(equalTo: self.view.bottomAnchor, constant: -UIDevice.bottomMargin),
+            self.stackView.bottomAnchor.constraint(equalTo: self.view.bottomAnchor),
             self.stackView.heightAnchor.constraint(equalToConstant: 40)
         ]
         landscapeConstraints = [
