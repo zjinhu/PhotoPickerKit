@@ -10,45 +10,45 @@ import SwiftUI
 import Combine
 
 @MainActor
-public class GalleryModel: ObservableObject {
-    public let photoLibrary = PhotoLibraryService.shared
+class GalleryModel: ObservableObject {
+    let photoLibrary = PhotoLibraryService.shared
     @Published
-    public var albums: [AlbumItem] = []
-    public var maxSelectionCount: Int = 0
+    var albums: [AlbumItem] = []
+    var maxSelectionCount: Int = 0
     @Published
-    public var defaultSelectIndex: Int = 0
+    var defaultSelectIndex: Int = 0
     @Published
-    public var onSelectedDone: Bool = false
+    var onSelectedDone: Bool = false
     @Published
-    public var autoCrop: Bool = false
+    var autoCrop: Bool = false
     @Published
-    public var isStatic: Bool = false
+    var isStatic: Bool = false
     @Published 
-    public var showQuicklook: Bool = false
+    var showQuicklook: Bool = false
     @Published
-    public var showCrop: Bool = false
+    var showCrop: Bool = false
     
     @Published 
-    public var permission: PhotoLibraryPermission = .denied
+    var permission: PhotoLibraryPermission = .denied
     @Published
-    public var selectedAssets: [SelectedAsset] = []
+    var selectedAssets: [SelectedAsset] = []
     @Published
-    public var showToast: Bool = false
+    var showToast: Bool = false
     @Published
-    public var cropRatio: CGSize = .zero
+    var cropRatio: CGSize = .zero
     @Published
-    public var selectedAsset: SelectedAsset?
+    var selectedAsset: SelectedAsset?
     
     @Published
-    public var isPresentedEdit = false
+    var isPresentedEdit = false
     
     @Published
-    public var previewSelectIndex: Int = 0
+    var previewSelectIndex: Int = 0
      
     private var subscribers: [AnyCancellable] = []
     var selectIndesPaths: [IndexPath] = []
     
-    public init() {
+    init() {
         
         switch photoLibrary.photoLibraryPermissionStatus {
         case .restricted, .limited:
@@ -72,7 +72,7 @@ public class GalleryModel: ObservableObject {
         
     }
     
-    public enum PhotoLibraryPermission {
+    enum PhotoLibraryPermission {
         case denied
         case limited
         case authorized
@@ -94,7 +94,7 @@ extension GalleryModel {
 
 extension GalleryModel {
 
-    public func loadAllAlbums() async {
+    func loadAllAlbums() async {
         let options = PHFetchOptions()
 //        options.includeAssetSourceTypes = [.typeUserLibrary, .typeiTunesSynced, .typeCloudShared]
 //        options.sortDescriptors = [NSSortDescriptor(key: "localizedTitle", ascending: true)]
@@ -220,25 +220,25 @@ public class VideoViewModel: ObservableObject {
 }
 
 //相簿列表项
-public class AlbumItem: Identifiable{
-    public let id = UUID()
+class AlbumItem: Identifiable{
+    let id = UUID()
     //相簿名称
-    public var title: String?
+    var title: String?
     /// 相册里的资源数量
-    public var count: Int = 0
+    var count: Int = 0
     //相簿内的资源
     @Published
-    public var result: PHFetchResult<PHAsset>?
+    var result: PHFetchResult<PHAsset>?
     /// 相册对象
-    public var collection: PHAssetCollection?
+    var collection: PHAssetCollection?
  
-    public init(title: String?,
+    init(title: String?,
          collection: PHAssetCollection?) {
         self.collection = collection
         self.title = title
     }
    
-    public func fetchResult(options: PHFetchOptions?) {
+    func fetchResult(options: PHFetchOptions?) {
         guard let collection = collection  else {
             return
         }

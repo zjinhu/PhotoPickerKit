@@ -7,7 +7,7 @@
 
 import UIKit
 
-public extension UICollectionView {
+extension UICollectionView {
     
     func useCell<T: UICollectionViewCell>(_ cellType: T.Type = T.self, indexPath: IndexPath) -> T {
         

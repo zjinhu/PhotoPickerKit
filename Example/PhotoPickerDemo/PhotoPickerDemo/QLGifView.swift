@@ -13,7 +13,7 @@ struct QLGifView: View {
     @StateObject var gifModel: GifViewModel
     
     
-    public init(asset: SelectedAsset) {
+    init(asset: SelectedAsset) {
         self.asset = asset
         _gifModel = StateObject(wrappedValue: GifViewModel(asset: asset))
     }

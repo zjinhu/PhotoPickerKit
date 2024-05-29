@@ -7,7 +7,7 @@
 
 import SwiftUI
 import BrickKit
-public extension Color {
+extension Color {
     static let textColor = Color(light: .init(hex: "222222"), dark: .white)
     static let backColor = Color(light: .white, dark: .init(hex: "222222"))
     static let mainBlack = Color(hex: "222222")
@@ -21,7 +21,7 @@ public extension Color {
     static let buttonunSelectedColor = Color(hex: "AEAAA7")
 }
 
-public extension Font {
+extension Font {
     static let f12 = Font.system(size: 12)
     static let f14 = Font.system(size: 14)
     static let f15 = Font.system(size: 15)

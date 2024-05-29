@@ -7,7 +7,7 @@
 
 import SwiftUI
 import BrickKit
-public struct EditView: UIViewControllerRepresentable {
+struct EditView: UIViewControllerRepresentable {
     @Environment(\.dismiss) private var dismiss
     
     var cropRatio: CGSize
@@ -15,7 +15,7 @@ public struct EditView: UIViewControllerRepresentable {
     var editDone: (SelectedAsset) -> Void
     var cropVideoTime: TimeInterval
     var cropVideoFixTime: Bool
-    public init(asset: SelectedAsset,
+    init(asset: SelectedAsset,
                 cropVideoTime: TimeInterval = 5,
                 cropVideoFixTime: Bool = false,
                 cropRatio: CGSize = .zero,
@@ -27,19 +27,19 @@ public struct EditView: UIViewControllerRepresentable {
         self.cropVideoFixTime = cropVideoFixTime
     }
     
-    public func makeCoordinator() -> Coordinator {
+    func makeCoordinator() -> Coordinator {
         Coordinator(self)
     }
     
-    public func makeUIViewController(context: Context) -> UIViewController {
+    func makeUIViewController(context: Context) -> UIViewController {
         return makeCropper(context: context)
     }
     
-    public func updateUIViewController(_ uiViewController: UIViewController, context: Context) {
+    func updateUIViewController(_ uiViewController: UIViewController, context: Context) {
         
     }
     
-    public func makeCropper(context: Context) -> UIViewController {
+    func makeCropper(context: Context) -> UIViewController {
         
         var config = EditorConfiguration()
         config.isFixedCropSizeState = true
@@ -93,7 +93,7 @@ public struct EditView: UIViewControllerRepresentable {
         return UIViewController()
     }
     
-    public class Coordinator: EditorViewControllerDelegate {
+    class Coordinator: EditorViewControllerDelegate {
         var parent: EditView
         
         init(_ parent: EditView) {
@@ -104,7 +104,7 @@ public struct EditView: UIViewControllerRepresentable {
         /// - Parameters:
         ///   - editorViewController: 对应的 EditorViewController
         ///   - result: 编辑后的数据
-        public func editorViewController(_ editorViewController: EditorViewController, didFinish asset: EditorAsset) {
+        func editorViewController(_ editorViewController: EditorViewController, didFinish asset: EditorAsset) {
 
             switch parent.selectedAsset.assetType {
 
@@ -162,7 +162,7 @@ public struct EditView: UIViewControllerRepresentable {
             
         }
         
-        public func editorViewController(didCancel editorViewController: EditorViewController) {
+        func editorViewController(didCancel editorViewController: EditorViewController) {
             parent.dismiss()
         }
         

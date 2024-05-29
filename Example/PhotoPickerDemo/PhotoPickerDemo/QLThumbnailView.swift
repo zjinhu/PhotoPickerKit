@@ -9,18 +9,18 @@ import SwiftUI
 import Photos
 import BrickKit
 import PhotoPickerKit
-public struct QLThumbnailView: View {
+struct QLThumbnailView: View {
     let asset: SelectedAsset
     let isStatic: Bool
     @StateObject var photoModel: PhotoViewModel
     
-    public init(asset: SelectedAsset, isStatic: Bool = false) {
+    init(asset: SelectedAsset, isStatic: Bool = false) {
         self.asset = asset
         self.isStatic = isStatic
         _photoModel = StateObject(wrappedValue: PhotoViewModel(asset: asset))
     }
     
-    public var body: some View {
+    var body: some View {
         GeometryReader { proxy in
             Rectangle()
                 .foregroundColor(Color.gray.opacity(0.3))

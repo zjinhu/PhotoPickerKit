@@ -9,16 +9,16 @@ import SwiftUI
 import Photos
 import BrickKit
 import PhotoPickerKit
-public struct QLImageView: View {
+struct QLImageView: View {
     let asset: SelectedAsset
     @StateObject var photoModel: PhotoViewModel
     
-    public init(asset: SelectedAsset) {
+    init(asset: SelectedAsset) {
         self.asset = asset
         _photoModel = StateObject(wrappedValue: PhotoViewModel(asset: asset))
     }
     
-    public var body: some View {
+    var body: some View {
         Image(uiImage: photoModel.image ?? UIImage())
             .resizable()
             .scaledToFit()

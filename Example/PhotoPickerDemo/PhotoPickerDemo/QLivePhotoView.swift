@@ -10,16 +10,16 @@ import PhotosUI
 import Photos
 import BrickKit
 import PhotoPickerKit
-public struct QLivePhotoView: View {
+struct QLivePhotoView: View {
     let asset: SelectedAsset
     @StateObject var photoModel: LivePhotoViewModel
     
-    public init(asset: SelectedAsset) {
+    init(asset: SelectedAsset) {
         self.asset = asset
         _photoModel = StateObject(wrappedValue: LivePhotoViewModel(asset: asset))
     }
     
-    public var body: some View {
+    var body: some View {
         ZStack(alignment: .topLeading) {
             LivePhotoView(livePhoto: photoModel.livePhoto)
  

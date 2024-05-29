@@ -105,7 +105,7 @@ extension PhotoLibraryError {
 }
 
 
-public extension PhotoLibraryService {
+extension PhotoLibraryService {
     
     func fetchAssetAllAlbums(options: PHFetchOptions, type: PHAssetMediaType? = nil) async -> [AlbumItem] {
         await withCheckedContinuation { (continuation: CheckedContinuation<[AlbumItem], Never>) in

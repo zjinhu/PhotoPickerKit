@@ -7,13 +7,13 @@
 
 import Foundation
  
-public extension Bundle {
+extension Bundle {
     func localizedString(forKey key: String) -> String {
         self.localizedString(forKey: key, value: nil, table: nil)
     }
 }
 
-public extension String {
+extension String {
     var localString: String {
         Bundle.module.localizedString(forKey: self)
     }

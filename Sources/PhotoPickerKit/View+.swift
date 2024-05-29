@@ -9,23 +9,6 @@ import SwiftUI
 import Photos
 import PhotosUI
 
-public struct GalleryType : OptionSet{
-    public let rawValue: Int
-    
-    public init(rawValue: Int) {
-        self.rawValue = rawValue
-    }
-    
-    public static let image = GalleryType(rawValue: 1)
-
-    public static let livePhoto = GalleryType(rawValue: 2)
-
-    public static let gif = GalleryType(rawValue: 3)
-
-    public static let video = GalleryType(rawValue: 4)
- 
-}
-
 public extension View {
     /// Customize the album to select photos
     /// - Parameters:

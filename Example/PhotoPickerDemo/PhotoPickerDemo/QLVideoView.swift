@@ -10,17 +10,17 @@ import AVKit
 import Photos
 import BrickKit
 import PhotoPickerKit
-public struct QLVideoView: View {
+struct QLVideoView: View {
     var asset: SelectedAsset
     @State private var player = AVPlayer()
     @State var isPlaying: Bool = false
     @State var playerItem: AVPlayerItem?
     
-    public init(asset: SelectedAsset) {
+    init(asset: SelectedAsset) {
         self.asset = asset
     }
     
-    public var body: some View {
+    var body: some View {
         ZStack {
             PlayerView(player: player)
             

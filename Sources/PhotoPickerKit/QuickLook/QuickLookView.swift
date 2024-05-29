@@ -8,14 +8,12 @@
 import SwiftUI
 import BrickKit
 
-public struct QuickLookView: View {
+struct QuickLookView: View {
     
     @EnvironmentObject var viewModel: GalleryModel
     @Environment(\.dismiss) private var dismiss
- 
-    public init() { }
-    
-    public var body: some View {
+
+    var body: some View {
         QuicklookHostView()
             .environmentObject(viewModel)
             .fullScreenCover(isPresented: $viewModel.isPresentedEdit) {
