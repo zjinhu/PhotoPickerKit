@@ -836,7 +836,7 @@ open class EditorViewController: HXBaseViewController {
         }
         
         ///xiugai add
-        invertColorButton.topAnchor.constraint(equalTo: view.topAnchor, constant: UIDevice.topMargin + 16).isActive = true
+        invertColorButton.topAnchor.constraint(equalTo: view.topAnchor).isActive = true
         invertColorButton.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -16).isActive = true
         invertColorButton.widthAnchor.constraint(equalToConstant: 30).isActive = true
         invertColorButton.heightAnchor.constraint(equalToConstant: 30).isActive = true
