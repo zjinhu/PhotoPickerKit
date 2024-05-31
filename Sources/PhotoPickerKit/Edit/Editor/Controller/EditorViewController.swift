@@ -429,7 +429,9 @@ open class EditorViewController: HXBaseViewController {
                     }else {
                         top = 30
                     }
-                    bottom = bottomMargin + 55 + 140
+                    //xiugai
+//                    bottom = bottomMargin + 55 + 140
+                    bottom = bottomMargin + (self.editorView.type == .video ? 100 : 20)
                 }else {
                     let navHeight: CGFloat
                     if let barHeight = self.navigationController?.navigationBar.height {
@@ -463,12 +465,19 @@ open class EditorViewController: HXBaseViewController {
                 return .init(top: top, left: left, bottom: bottom, right: right)
             }else {
                 let margin = self.view.width - self.rotateScaleView.x + 15
+                //xiugai
                 return .init(
-                    top: UIDevice.topMargin + 55,
+                    top: UIDevice.topMargin + 30,
                     left: margin,
-                    bottom: UIDevice.bottomMargin + 15,
+                    bottom: UIDevice.bottomMargin + (self.editorView.type == .video ? 40 : 0),//xiugai
                     right: margin
                 )
+//                return .init(
+//                    top: UIDevice.topMargin + 55,
+//                    left: margin,
+//                    bottom: UIDevice.bottomMargin + 15,
+//                    right: margin
+//                )
             }
         }
         editorView.urlConfig = config.urlConfig
@@ -517,9 +526,9 @@ open class EditorViewController: HXBaseViewController {
         ]
         landscapeConstraints = [
             self.stackView.topAnchor.constraint(equalTo: self.view.topAnchor, constant: 16),
-            self.stackView.trailingAnchor.constraint(equalTo: self.view.trailingAnchor, constant: -16),
+            self.stackView.leadingAnchor.constraint(equalTo: self.view.leadingAnchor, constant: 16),
             self.stackView.bottomAnchor.constraint(equalTo: self.view.bottomAnchor, constant: -16),
-            self.stackView.widthAnchor.constraint(equalToConstant: 128)
+            self.stackView.widthAnchor.constraint(equalToConstant: 60)
         ]
     }
     
@@ -1054,7 +1063,7 @@ open class EditorViewController: HXBaseViewController {
         }
         
         if orientationDidChange || firstAppear {
-            videoControlView.frame = .init(x: 0, y: toolsView.y - 80, width: view.width, height: 50)
+            videoControlView.frame = .init(x: 0, y: toolsView.y - 20, width: view.width, height: 50)
         }
     }
     
@@ -1145,7 +1154,7 @@ open class EditorViewController: HXBaseViewController {
         if orientationDidChange || firstAppear {
             videoControlView.frame = .init(
                 x: 0,
-                y: view.height - UIDevice.bottomMargin - 60,
+                y: view.height - UIDevice.bottomMargin - 20,
                 width: view.width, height: 40
             )
         }

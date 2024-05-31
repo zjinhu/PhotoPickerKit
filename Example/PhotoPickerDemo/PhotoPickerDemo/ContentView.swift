@@ -43,8 +43,8 @@ struct ContentView: View {
                                    maxSelectionCount: 1,
                                    selectTitle: "Videos",
                                    autoCrop: true,
-                                   cropRatio: .init(width: 1, height: 1),
-                                   onlyImage: true,
+                                   cropRatio: .init(width: 1, height: 3),
+                                   onlyImage: false,
                                    selected: $selectItem.pictures)
                 
                 Button {

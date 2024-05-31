@@ -67,46 +67,8 @@ class EditorVideoControlView: UIView {
         super.init(frame: .zero)
         initViews()
     }
-    
-    //xiugai add
-    private lazy var titleLb: UILabel = {
-        let lb = UILabel()
-        lb.text = "选择范围".localString
-        lb.textColor = .white
-        lb.font = .systemFont(ofSize: 14, weight: .medium)
-        lb.translatesAutoresizingMaskIntoConstraints = false
-        return lb
-    }()
-    private lazy var subTitlelb: UILabel = {
-        let lb = UILabel()
-        lb.text = "由于系统限制，较长的动画时间可能会出现卡顿".localString
-        lb.textColor = .gray
-        lb.font = .systemFont(ofSize: 12)
-        lb.translatesAutoresizingMaskIntoConstraints = false
-        return lb
-    }()
-    private lazy var contentView: UIView = {
-        let view = UIView()
-        view.translatesAutoresizingMaskIntoConstraints = false
-        return view
-    }()
-    
+
     private func initViews() {
-        ///xiugai add
-        addSubview(contentView)
-        contentView.addSubview(titleLb)
-        contentView.addSubview(subTitlelb)
-        NSLayoutConstraint.activate([
-            titleLb.leadingAnchor.constraint(equalTo: contentView.leadingAnchor),
-            titleLb.trailingAnchor.constraint(equalTo: contentView.trailingAnchor),
-            titleLb.topAnchor.constraint(equalTo: contentView.topAnchor),
-            
-            subTitlelb.topAnchor.constraint(equalTo: titleLb.bottomAnchor, constant: 5),
-            subTitlelb.leadingAnchor.constraint(equalTo: contentView.leadingAnchor),
-            subTitlelb.trailingAnchor.constraint(equalTo: contentView.trailingAnchor),
-            subTitlelb.bottomAnchor.constraint(equalTo: contentView.bottomAnchor)
-        ])
-        
         flowLayout = UICollectionViewFlowLayout()
         flowLayout.scrollDirection = .horizontal
         flowLayout.minimumLineSpacing = 0
@@ -458,18 +420,7 @@ class EditorVideoControlView: UIView {
                 width: width - rightMargin - playView.frame.maxX - 1,
                 height: height
             )
-            ///xiugai add
-            contentView.isHidden = false
-            NSLayoutConstraint.activate([
-                self.contentView.leadingAnchor.constraint(equalTo: self.leadingAnchor, constant: 16),
-                self.contentView.trailingAnchor.constraint(equalTo: self.trailingAnchor, constant: -16),
-                self.contentView.bottomAnchor.constraint(equalTo: self.bgView.topAnchor, constant: -40),
-                self.contentView.heightAnchor.constraint(equalToConstant: 40)
-            ])
         }else {
-            ///xiugai add
-            contentView.isHidden = true
-            
             playView.frame = .init(x: margin + UIDevice.leftMargin, y: 0, width: playWidth, height: height)
             bgView.frame = .init(
                 x: playView.frame.maxX + 1,
