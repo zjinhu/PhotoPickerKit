@@ -55,6 +55,7 @@ struct EditView: UIViewControllerRepresentable {
             config.cropSize.aspectRatios = []
         }else{
             config.cropSize.isFixedRatio = false
+            config.cropSize.aspectRatios = []
         }
 
         switch selectedAsset.assetType {
@@ -133,7 +134,7 @@ struct EditView: UIViewControllerRepresentable {
                     break
                 }
                 
-            case.gif:
+            case .gif:
 
                 switch asset.result{
                 case .video(let result, _):

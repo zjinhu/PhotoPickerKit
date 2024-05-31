@@ -60,9 +60,9 @@ open class EditorViewController: HXBaseViewController {
     lazy var invertColorButton: UIButton = {
         let btn = UIButton()
         btn.setImage(UIImage(systemName: "circle.lefthalf.filled.inverse"), for: .normal)
+        btn.setImage(UIImage(systemName: "circle.lefthalf.filled"), for: .selected)
         btn.tintColor = .white
         btn.transform = CGAffineTransform(rotationAngle: .pi / 4)
-//        btn.contentEdgeInsets = UIEdgeInsets(top: 4, left: 10, bottom: 4, right: 10)
         btn.addTarget(self, action: #selector(didIvertColorClick(button:)), for: .touchUpInside)
         btn.translatesAutoresizingMaskIntoConstraints = false
         return btn
@@ -427,7 +427,9 @@ open class EditorViewController: HXBaseViewController {
                     if self.isFullScreen {
                         top = UIDevice.isPad ? 50 : UIDevice.topMargin + 10
                     }else {
-                        top = 30
+                        //xiugai
+                        top = 50
+//                        top = 30
                     }
                     //xiugai
 //                    bottom = bottomMargin + 55 + 140
@@ -763,7 +765,7 @@ open class EditorViewController: HXBaseViewController {
 //        }else {
 //            resetWidth = 0
 //        }
-//        
+//
 //        cancelButton.height = buttonHeight
 //        finishButton.height = buttonHeight
 //        cancelButton.width = cancelWidth + 10
