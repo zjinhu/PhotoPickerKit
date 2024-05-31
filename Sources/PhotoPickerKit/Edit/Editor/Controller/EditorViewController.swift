@@ -433,7 +433,7 @@ open class EditorViewController: HXBaseViewController {
                     }
                     //xiugai
 //                    bottom = bottomMargin + 55 + 140
-                    bottom = bottomMargin + (self.editorView.type == .video ? 100 : 20)
+                    bottom = bottomMargin + 50 + (self.editorView.type == .video ? 60 : 0)
                 }else {
                     let navHeight: CGFloat
                     if let barHeight = self.navigationController?.navigationBar.height {
@@ -466,13 +466,13 @@ open class EditorViewController: HXBaseViewController {
                 let right = UIDevice.isPad ? 30 : UIDevice.rightMargin + 15
                 return .init(top: top, left: left, bottom: bottom, right: right)
             }else {
-                let margin = self.view.width - self.rotateScaleView.x + 15
+//                let margin = self.view.width - self.rotateScaleView.x + 15
                 //xiugai
                 return .init(
                     top: UIDevice.topMargin + 30,
-                    left: margin,
-                    bottom: UIDevice.bottomMargin + (self.editorView.type == .video ? 40 : 0),//xiugai
-                    right: margin
+                    left: 150,
+                    bottom: UIDevice.bottomMargin + (self.editorView.type == .video ? 40 : 10),//xiugai
+                    right: 150
                 )
 //                return .init(
 //                    top: UIDevice.topMargin + 55,
@@ -1065,7 +1065,9 @@ open class EditorViewController: HXBaseViewController {
         }
         
         if orientationDidChange || firstAppear {
-            videoControlView.frame = .init(x: 0, y: toolsView.y - 20, width: view.width, height: 50)
+//            videoControlView.frame = .init(x: 0, y: toolsView.y - 20, width: view.width, height: 50)
+            //xiugai
+            videoControlView.frame = .init(x: 0, y: view.height - 105, width: view.width, height: 50)
         }
     }
     
