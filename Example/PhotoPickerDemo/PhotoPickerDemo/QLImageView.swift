@@ -35,6 +35,10 @@ struct QLImageView: View {
             photoModel.image = ima
             return
         }
+        if let ima = asset.imageData{
+            photoModel.image = UIImage(data: ima)
+            return
+        }
         photoModel.loadImage()
     }
 }

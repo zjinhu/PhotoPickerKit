@@ -12,38 +12,23 @@ import Combine
 @MainActor
 class GalleryModel: ObservableObject {
     let photoLibrary = PhotoLibraryService.shared
-    @Published
-    var albums: [AlbumItem] = []
+    @Published var albums: [AlbumItem] = []
     var maxSelectionCount: Int = 0
-    @Published
-    var defaultSelectIndex: Int = 0
-    @Published
-    var onSelectedDone: Bool = false
-    @Published
-    var autoCrop: Bool = false
-    @Published
-    var isStatic: Bool = false
-    @Published 
-    var showQuicklook: Bool = false
-    @Published
-    var showCrop: Bool = false
+    @Published var defaultSelectIndex: Int = 0
+    @Published var onSelectedDone: Bool = false
+    @Published var autoCrop: Bool = false
+    @Published var isStatic: Bool = false
+    @Published var showQuicklook: Bool = false
+    @Published var showCrop: Bool = false
     
-    @Published 
-    var permission: PhotoLibraryPermission = .denied
-    @Published
-    var selectedAssets: [SelectedAsset] = []
-    @Published
-    var showToast: Bool = false
-    @Published
-    var cropRatio: CGSize = .zero
-    @Published
-    var selectedAsset: SelectedAsset?
+    @Published var permission: PhotoLibraryPermission = .denied
+    @Published var selectedAssets: [SelectedAsset] = []
+    @Published var showToast: Bool = false
+    @Published var cropRatio: CGSize = .zero
+    @Published var selectedAsset: SelectedAsset?
     
-    @Published
-    var isPresentedEdit = false
-    
-    @Published
-    var previewSelectIndex: Int = 0
+    @Published var isPresentedEdit = false
+    @Published var previewSelectIndex: Int = 0
      
     private var subscribers: [AnyCancellable] = []
     var selectIndesPaths: [IndexPath] = []
@@ -163,7 +148,7 @@ public class LivePhotoViewModel: ObservableObject {
     }
     
     public func loadAsset() {
-        requestID =  asset.asset.loadLivePhoto(resultClosure: { [weak self] photo in
+        requestID =  asset.asset.getLivePhoto(resultClosure: { [weak self] photo in
             self?.livePhoto = photo
         })
     }

@@ -26,12 +26,12 @@ struct ContentView: View {
     @State private var selectedImages: [UIImage]?
     
     @StateObject var selectItem = SelectItem()
-    
+
     var body: some View {
         NavigationView{
             
             VStack {
-                
+
                 Button {
                     isPresentedGallery.toggle()
                 } label: {
@@ -40,12 +40,12 @@ struct ContentView: View {
                         .frame(height: 50)
                 }
                 .galleryPicker(isPresented: $isPresentedGallery,
-                                   maxSelectionCount: 1,
-                                   selectTitle: "Videos",
-                                   autoCrop: true,
-                                   cropRatio: .init(width: 1, height: 3),
-                                   onlyImage: false,
-                                   selected: $selectItem.pictures)
+                               maxSelectionCount: 5,
+                               selectTitle: "Videos",
+                               autoCrop: true,
+                               cropRatio: .init(width: 1, height: 3),
+                               onlyImage: false,
+                               selected: $selectItem.pictures)
                 
                 Button {
                     showPicker.toggle()
@@ -85,78 +85,32 @@ struct ContentView: View {
                         
                         
                         Button {
- 
-                            selectItem.selectedIndex = index
+
+                            ///在进入编辑页面之前需要准备好相关类型的资源，保证每次进入编辑都是最原始的状态
+                            Task{
+                                selectItem.selectedAsset = await picture.getOriginalSource()
+                                selectItem.selectedIndex = index
+                                isPresentedCrop.toggle()
+                            }
+
+                        } label: {
                             
                             switch picture.fetchPHAssetType(){
-                                
                             case .gif:
-                                
-                                if let imageData = picture.asset.toImageData(){
-                                    GifTool.createVideoFromGif(gifData: imageData) { url in
-                                        DispatchQueue.main.async {
-                                            picture.gifVideoUrl = url
-//                                            picture.imageData = imageData
-                                            selectItem.selectedAsset = picture
-                                            isPresentedCrop.toggle()
-                                        }
-                                    }
-                                }
-                                
-                            case .video:
-                                
-                                Task{
-                                    if let url = await picture.asset.getVideoUrl(){
-                                        await MainActor.run{
-                                            picture.videoUrl = url
-                                            selectItem.selectedAsset = picture
-                                            isPresentedCrop.toggle()
-                                        }
-                                    }
-                                }
-                                
-                                
+                                QLGifView(asset: picture)
                             case .livePhoto:
-                                
-                                picture.asset.getLivePhotoVideoUrl { url in
-                                    if let url {
-                                        DispatchQueue.main.async {
-                                            picture.videoUrl = url
-                                            selectItem.selectedAsset = picture
-                                            isPresentedCrop.toggle()
-                                        }
-                                    }
-                                }
-                                
-                                
-                            default: 
-                                
-                                if let image = picture.asset.toImage(){
-                                    picture.image = image
-                                    selectItem.selectedAsset = picture
-                                    isPresentedCrop.toggle()
-                                }
+                                QLivePhotoView(asset: picture)
+                                    .frame(height: Screen.width)
+                            case .video:
+                                QLVideoView(asset: picture)
+                                    .frame(height: 200)
+                            default:
+                                QLImageView(asset: picture)
                             }
                             
-                        } label: {
-
-                                switch picture.fetchPHAssetType(){
-                                case .gif:
-                                    QLGifView(asset: picture)
-                                case .livePhoto:
-                                    QLivePhotoView(asset: picture)
-                                        .frame(height: Screen.width)
-                                case .video:
-                                    QLVideoView(asset: picture)
-                                        .frame(height: 200)
-                                default:
-                                    QLImageView(asset: picture)
-                                }
-                            
                         }
-                        .id(UUID())
                     }
-                }
+                }.id(UUID())
                 
             }
         }

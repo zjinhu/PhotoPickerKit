@@ -86,11 +86,60 @@ struct GalleryPageView: View {
             }
         }
         .onChange(of: viewModel.onSelectedDone){ newValue in
+            let group = DispatchGroup()
+            let queue = DispatchQueue.global()
+            
+            var items: [SelectedAsset] = []
             for item in viewModel.selectedAssets{
+                group.enter()
+                
                 item.isStatic = viewModel.isStatic
+                
+                switch item.fetchPHAssetType() {
+                case .livePhoto:
+                    queue.async(group: group) {
+                        item.asset.getLivePhotoVideoUrl { url in
+                            item.videoUrl = url
+                            items.append(item)
+                            group.leave()
+                        }
+                    }
+                case .video:
+                    queue.async(group: group) {
+                        item.asset.getVideoUrl { url in
+                            item.videoUrl = url
+                            items.append(item)
+                            group.leave()
+                        }
+                    }
+                case .gif:
+                    queue.async(group: group) {
+                        if let imageData = item.asset.toImageData(){
+                            GifTool.createVideoFromGif(gifData: imageData) { url in
+                                DispatchQueue.main.async {
+                                    item.videoUrl = url
+                                    items.append(item)
+                                    group.leave()
+                                }
+                            }
+                        }else{
+                            group.leave()
+                        }
+                    }
+                default:
+                    queue.async(group: group) {
+                        if let image = item.asset.toImage(){
+                            item.image = image
+                            items.append(item)
+                            group.leave()
+                        }
+                    }
+                }
             }
-            selected = viewModel.selectedAssets
-            dismiss()
+            group.notify(queue: .main) {
+                selected = items
+                dismiss()
+            }
         }
         .onChange(of: viewModel.showQuicklook){ newValue in
             if viewModel.selectedAssets.isEmpty{}else{
@@ -102,49 +151,9 @@ struct GalleryPageView: View {
         }
         .onChange(of: viewModel.showCrop){ newValue in
             if let sset = viewModel.selectedAsset{
-                switch sset.fetchPHAssetType(){
-                case .video:
-                    Task{
-                        if let url = await sset.asset.getVideoUrl(){
-                            await MainActor.run{
-                                viewModel.selectedAsset = sset
-                                viewModel.selectedAsset?.videoUrl = url
-                                isNavigationCrop.toggle()
-                            }
-                        }
-                    }
-                case .livePhoto:
-                    
-                    sset.asset.getLivePhotoVideoUrl { url in
-                        if let url {
-                            DispatchQueue.main.async {
-                                viewModel.selectedAsset = sset
-                                viewModel.selectedAsset?.videoUrl = url
-                                isNavigationCrop.toggle()
-                            }
-                        }
-                    }
-                    
-                case .gif:
-                    
-                    if let imageData = sset.asset.toImageData(){
-                        GifTool.createVideoFromGif(gifData: imageData) { url in
-                            DispatchQueue.main.async {
-                                viewModel.selectedAsset = sset
-                                viewModel.selectedAsset?.imageData = imageData
-                                viewModel.selectedAsset?.gifVideoUrl = url
-                                isNavigationCrop.toggle()
-                            }
-                        }
-                    }
-                    
-                default:
-                    
-                    if let image = sset.asset.toImage(){
-                        viewModel.selectedAsset = sset
-                        viewModel.selectedAsset?.image = image
-                        isNavigationCrop.toggle()
-                    }
+                Task{
+                    await viewModel.selectedAsset?.getOriginalSource()
+                    isNavigationCrop.toggle()
                 }
             }
         }

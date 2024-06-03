@@ -64,7 +64,37 @@ public extension PHAsset{
         )
     }
     
-    func loadLivePhoto(size: CGSize = PHImageManagerMaximumSize,
+    /// 单次使用，不要频繁调用，尤其是列表或者循环中
+    func toImageData() -> Data? {
+        let options = PHImageRequestOptions()
+        options.isNetworkAccessAllowed = true
+        options.deliveryMode = .opportunistic
+        var imageData: Data?
+        options.isSynchronous = true
+ 
+        PHCachingImageManager.default().requestImageDataAndOrientation(for: self, options: options) { data, _, _, _ in
+            imageData = data
+        }
+        return imageData
+    }
+    
+    @discardableResult
+    func getImageData(_ resultClosure: @escaping (Data?)->()) -> PHImageRequestID{
+
+        let options = PHImageRequestOptions()
+        options.isNetworkAccessAllowed = true
+        options.deliveryMode = .opportunistic
+        
+        return PHCachingImageManager.default().requestImageDataAndOrientation(
+            for: self,
+            options: options,
+            resultHandler: { imageData, _, _, _  in
+                resultClosure(imageData)
+            }
+        )
+    }
+    
+    func getLivePhoto(size: CGSize = PHImageManagerMaximumSize,
                        mode: PHImageContentMode = .default,
                        resultClosure: @escaping (PHLivePhoto?)->()) -> PHImageRequestID {
         
@@ -99,6 +129,56 @@ public extension PHAsset{
                     continuation.resume(returning: nil)
                 }
             }
+        }
+    }
+    
+    
+    func getLivePhotoVideoUrl(size: CGSize = .zero,
+                              mode: PHImageContentMode = .default,
+                              completion: @escaping (URL?) -> Void) {
+        var didResume = false
+        let options = PHLivePhotoRequestOptions()
+        options.deliveryMode = .opportunistic
+        options.isNetworkAccessAllowed = true
+        
+        var requestSize: CGSize
+        if size == .zero{
+            requestSize = CGSize(width: UIScreen.main.bounds.size.width * UIScreen.main.scale, height: UIScreen.main.bounds.size.height * UIScreen.main.scale)
+        }else{
+            requestSize = CGSize(width: size.width * UIScreen.main.scale, height: size.height * UIScreen.main.scale)
+        }
+        
+        PHCachingImageManager.default().requestLivePhoto(for: self,
+                                                         targetSize: requestSize,
+                                                         contentMode: mode,
+                                                         options: options) { (livePhoto, info) in
+            guard let livePhoto = livePhoto,
+                  let assetResources = PHAssetResource.assetResources(for: livePhoto) as? [PHAssetResource],
+                  let videoResource = assetResources.first(where: { $0.type == .pairedVideo }) else {
+                completion(nil)
+                return
+            }
+            
+            let options = PHAssetResourceRequestOptions()
+            options.isNetworkAccessAllowed = true
+            
+            let temporaryDirectoryURL = FileManager.default.temporaryDirectory
+            let videoFileURL = temporaryDirectoryURL.appendingPathComponent(videoResource.originalFilename)
+            try? FileManager.default.removeItem(at: videoFileURL)
+            
+            PHAssetResourceManager.default().writeData(for: videoResource, toFile: videoFileURL, options: options) { error in
+                if didResume {
+                    return
+                }
+                didResume = true
+                if let error = error {
+                    print("Error writing video data: \(error.localizedDescription)")
+                    completion(nil)
+                } else {
+                    completion(videoFileURL)
+                }
+            }
+            
         }
     }
     
@@ -157,52 +237,18 @@ public extension PHAsset{
         }
     }
 
-    func getLivePhotoVideoUrl(size: CGSize = .zero,
-                              mode: PHImageContentMode = .default,
-                              completion: @escaping (URL?) -> Void) {
-        var didResume = false
-        let options = PHLivePhotoRequestOptions()
-        options.deliveryMode = .opportunistic
+    func getVideoUrl(_ completion: @escaping (URL?) -> Void) {
+        let options = PHVideoRequestOptions()
+        options.version = .original
+        options.deliveryMode = .automatic
         options.isNetworkAccessAllowed = true
         
-        var requestSize: CGSize
-        if size == .zero{
-            requestSize = CGSize(width: UIScreen.main.bounds.size.width * UIScreen.main.scale, height: UIScreen.main.bounds.size.height * UIScreen.main.scale)
-        }else{
-            requestSize = CGSize(width: size.width * UIScreen.main.scale, height: size.height * UIScreen.main.scale)
-        }
-        
-        PHCachingImageManager.default().requestLivePhoto(for: self,
-                                                         targetSize: requestSize,
-                                                         contentMode: mode,
-                                                         options: options) { (livePhoto, info) in
-            guard let livePhoto = livePhoto,
-                  let assetResources = PHAssetResource.assetResources(for: livePhoto) as? [PHAssetResource],
-                  let videoResource = assetResources.first(where: { $0.type == .pairedVideo }) else {
+        PHCachingImageManager.default().requestAVAsset(forVideo: self, options: options) { avAsset, _, _ in
+            if let urlAsset = avAsset as? AVURLAsset {
+                completion(urlAsset.url)
+            }else{
                 completion(nil)
-                return
             }
-            
-            let options = PHAssetResourceRequestOptions()
-            options.isNetworkAccessAllowed = true
-            
-            let temporaryDirectoryURL = FileManager.default.temporaryDirectory
-            let videoFileURL = temporaryDirectoryURL.appendingPathComponent(videoResource.originalFilename)
-            try? FileManager.default.removeItem(at: videoFileURL)
-            
-            PHAssetResourceManager.default().writeData(for: videoResource, toFile: videoFileURL, options: options) { error in
-                if didResume {
-                    return
-                }
-                didResume = true
-                if let error = error {
-                    print("Error writing video data: \(error.localizedDescription)")
-                    completion(nil)
-                } else {
-                    completion(videoFileURL)
-                }
-            }
-            
         }
     }
 
@@ -218,33 +264,5 @@ public extension PHAsset{
         }
         return false
     }
-    /// 单次使用，不要频繁调用，尤其是列表或者循环中
-    func toImageData() -> Data? {
-        let options = PHImageRequestOptions()
-        options.isNetworkAccessAllowed = true
-        options.deliveryMode = .opportunistic
-        var imageData: Data?
-        options.isSynchronous = true
- 
-        PHCachingImageManager.default().requestImageDataAndOrientation(for: self, options: options) { data, _, _, _ in
-            imageData = data
-        }
-        return imageData
-    }
-    
-    @discardableResult
-    func getImageData(_ resultClosure: @escaping (Data?)->()) -> PHImageRequestID{
 
-        let options = PHImageRequestOptions()
-        options.isNetworkAccessAllowed = true
-        options.deliveryMode = .opportunistic
-        
-        return PHCachingImageManager.default().requestImageDataAndOrientation(
-            for: self,
-            options: options,
-            resultHandler: { imageData, _, _, _  in
-                resultClosure(imageData)
-            }
-        )
-    }
 }

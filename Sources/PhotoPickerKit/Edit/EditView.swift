@@ -67,16 +67,8 @@ struct EditView: UIViewControllerRepresentable {
                 vc.delegate = context.coordinator
                 return vc
             }
-        case .video:
-            if let videoUrl = selectedAsset.videoUrl{
-                config.video.cropTime.minimumTime = 1
-                config.video.cropTime.maximumTime = cropVideoTime
-                let vc = EditorViewController(.init(type: .video(videoUrl)), config: config)
-                vc.delegate = context.coordinator
-                return vc
-            }
-        case .gif:
-            if let url = selectedAsset.gifVideoUrl{
+        case .video, .gif:
+            if let url = selectedAsset.videoUrl{
                 config.video.cropTime.minimumTime = 1
                 config.video.cropTime.maximumTime = cropVideoTime
                 let vc = EditorViewController(.init(type: .video(url)), config: config)
@@ -140,7 +132,6 @@ struct EditView: UIViewControllerRepresentable {
                 case .video(let result, _):
                     GifTool.createGifData(from: result.url) { date in
                         self.parent.selectedAsset.imageData = date
-//                        self.parent.selectedAsset.gifVideoUrl = result.url
                         self.parent.editDone(self.parent.selectedAsset)
                         self.parent.dismiss()
                     }
@@ -154,6 +145,7 @@ struct EditView: UIViewControllerRepresentable {
                    let imageData = try? Data(contentsOf: imageURL),
                    let image = UIImage(data: imageData){
                     parent.selectedAsset.image = image
+                    parent.selectedAsset.imageData = imageData
                 }else{
                     parent.selectedAsset.image = asset.result?.image
                 }

@@ -160,7 +160,7 @@ class QuicklookViewController: UIViewController {
             if let imageData = sset.asset.toImageData(){
                 GifTool.createVideoFromGif(gifData: imageData) { url in
                     DispatchQueue.main.async {
-                        sset.gifVideoUrl = url
+                        sset.videoUrl = url
 //                        sset.imageData = imageData
                         self.viewModel.selectedAsset = sset
                         self.viewModel.isPresentedEdit.toggle()
