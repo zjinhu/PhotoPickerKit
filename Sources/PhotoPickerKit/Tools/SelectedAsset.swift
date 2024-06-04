@@ -105,10 +105,8 @@ public class SelectedAsset : Identifiable, Equatable, Hashable{
         case .video:
             
             if let url = await self.asset.getVideoUrl(){
-                await MainActor.run{
-                    self.videoUrl = url
-                    return self
-                }
+                self.videoUrl = url
+                return self
             }
             
         case .livePhoto:
