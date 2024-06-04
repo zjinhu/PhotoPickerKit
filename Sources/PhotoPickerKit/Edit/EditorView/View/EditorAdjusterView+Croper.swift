@@ -33,15 +33,8 @@ extension EditorAdjusterView {
     
     var isCropedImage: Bool {
         let cropRatio = getCropOption()
-        var canvasImage: UIImage?
-        if #available(iOS 13.0, *) {
-            canvasImage = contentView.isCanvasEmpty ? nil : contentView.canvasImage
-        }
+
         let cropFactor = CropFactor(
-            drawLayer: contentView.drawView.count > 0 ? contentView.drawView.layer : nil,
-            canvasImage: canvasImage,
-            mosaicLayer: contentView.mosaicView.count > 0 ? contentView.mosaicView.layer : nil,
-            stickersLayer: contentView.stickerView.count > 0 ? contentView.stickerView.layer : nil,
             isCropImage: isCropImage,
             isRound: isCropRund,
             maskImage: maskImage,
@@ -76,19 +69,12 @@ extension EditorAdjusterView {
             }
             return
         }
-        deselectedSticker()
+
         let image = self.image
         let cropRect = getCropRect()
         let cropRatio = getCropOption()
-        var canvasImage: UIImage?
-        if #available(iOS 13.0, *) {
-            canvasImage = contentView.isCanvasEmpty ? nil : contentView.canvasImage
-        }
+
         let cropFactor = CropFactor(
-            drawLayer: contentView.drawView.count > 0 ? contentView.drawView.layer : nil,
-            canvasImage: canvasImage,
-            mosaicLayer: contentView.mosaicView.count > 0 ? contentView.mosaicView.layer : nil,
-            stickersLayer: contentView.stickerView.count > 0 ? contentView.stickerView.layer : nil,
             isCropImage: isCropImage,
             isRound: isCropRund,
             maskImage: maskImage,
@@ -421,25 +407,7 @@ extension EditorAdjusterView {
 
 extension EditorAdjusterView {
     func getOverlayImage(_ imageSize: CGSize, cropFactor: CropFactor) -> UIImage? {
-        var images: [UIImage] = []
-        if let layer = cropFactor.drawLayer,
-           let drawImage = layer.convertedToImage() {
-            images.append(drawImage)
-            layer.contents = nil
-        }
-        if let image = cropFactor.canvasImage {
-            images.append(image)
-        }
-        if let layer = cropFactor.mosaicLayer,
-           let mosaicImage = layer.convertedToImage() {
-            images.append(mosaicImage)
-            layer.contents = nil
-        }
-        if let layer = cropFactor.stickersLayer,
-           let stickersImage = layer.convertedToImage() {
-            images.append(stickersImage)
-            layer.contents = nil
-        }
+        let images: [UIImage] = []
         return UIImage.merge(images: images)?.scaleToFillSize(size: imageSize)
     }
 }
@@ -447,10 +415,6 @@ extension EditorAdjusterView {
 extension EditorAdjusterView {
     
     struct CropFactor {
-        let drawLayer: CALayer?
-        let canvasImage: UIImage?
-        let mosaicLayer: CALayer?
-        let stickersLayer: CALayer?
         let isCropImage: Bool
         let isRound: Bool
         let maskImage: UIImage?
@@ -466,10 +430,6 @@ extension EditorAdjusterView {
         let isEmpty: Bool
         
         init(
-            drawLayer: CALayer?,
-            canvasImage: UIImage?,
-            mosaicLayer: CALayer?,
-            stickersLayer: CALayer?,
             isCropImage: Bool,
             isRound: Bool,
             maskImage: UIImage?,
@@ -480,10 +440,6 @@ extension EditorAdjusterView {
             waterSizeRatio: CGPoint,
             waterCenterRatio: CGPoint
         ) {
-            self.drawLayer = drawLayer
-            self.canvasImage = canvasImage
-            self.mosaicLayer = mosaicLayer
-            self.stickersLayer = stickersLayer
             self.isCropImage = isCropImage
             self.isRound = isRound
             self.maskImage = maskImage
@@ -494,11 +450,7 @@ extension EditorAdjusterView {
             self.waterSizeRatio = waterSizeRatio
             self.waterCenterRatio = waterCenterRatio
             
-            isEmpty = drawLayer == nil
-            && canvasImage == nil
-            && mosaicLayer == nil
-            && stickersLayer == nil
-            && !isCropImage
+            isEmpty = !isCropImage
             && !isRound
             && maskImage == nil
             && angle == 0
@@ -514,11 +466,7 @@ extension EditorAdjusterView {
                 allowCroped = !(!isCropImage &&
                                 !isRound &&
                                 maskImage == nil &&
-                                mirrorScale.x * mirrorScale.y > 0 &&
-                                drawLayer == nil &&
-                                canvasImage == nil &&
-                                mosaicLayer == nil &&
-                                stickersLayer == nil)
+                                mirrorScale.x * mirrorScale.y > 0)
             }
             isClip = isCropImage || isRound || maskImage != nil
         }
@@ -550,10 +498,6 @@ extension EditorAdjusterView {
         
         static var empty: CropFactor {
             .init(
-                drawLayer: nil,
-                canvasImage: nil,
-                mosaicLayer: nil,
-                stickersLayer: nil,
                 isCropImage: false,
                 isRound: false,
                 maskImage: nil,

@@ -13,12 +13,7 @@ public struct AssetPermissionsUtil {
     /// 获取当前相册权限状态
     /// - Returns: 权限状态
     public static var authorizationStatus: PHAuthorizationStatus {
-        let status: PHAuthorizationStatus
-        if #available(iOS 14, *) {
-            status = PHPhotoLibrary.authorizationStatus(for: .readWrite)
-        } else {
-            status = PHPhotoLibrary.authorizationStatus()
-        }
+        let status  = PHPhotoLibrary.authorizationStatus(for: .readWrite)
         return status
     }
     
@@ -27,7 +22,7 @@ public struct AssetPermissionsUtil {
     public static func requestCameraAccess(
         completionHandler: @escaping (Bool) -> Void
     ) {
-        #if !targetEnvironment(macCatalyst)
+#if !targetEnvironment(macCatalyst)
         AVCaptureDevice.requestAccess(
             for: .video
         ) { (granted) in
@@ -35,26 +30,26 @@ public struct AssetPermissionsUtil {
                 completionHandler(granted)
             }
         }
-        #else
+#else
         completionHandler(false)
-        #endif
+#endif
     }
     
     /// 当前相机权限状态
     /// - Returns: 权限状态
-    #if !targetEnvironment(macCatalyst)
+#if !targetEnvironment(macCatalyst)
     public static var cameraAuthorizationStatus:  AVAuthorizationStatus {
         AVCaptureDevice.authorizationStatus(for: AVMediaType.video)
     }
-    #endif
+#endif
     
     /// 当前相册权限状态是否是Limited
     public static var isLimitedAuthorizationStatus:  Bool {
-        #if !targetEnvironment(macCatalyst)
-        if #available(iOS 14, *), authorizationStatus == .limited  {
+#if !targetEnvironment(macCatalyst)
+        if authorizationStatus == .limited  {
             return true
         }
-        #endif
+#endif
         return false
     }
     
@@ -66,21 +61,15 @@ public struct AssetPermissionsUtil {
     ) {
         let status = authorizationStatus
         if status == PHAuthorizationStatus.notDetermined {
-            if #available(iOS 14, *) {
-                PHPhotoLibrary.requestAuthorization(
-                    for: .readWrite
-                ) { (authorizationStatus) in
-                    DispatchQueue.main.async {
-                        handler(authorizationStatus)
-                    }
-                }
-            } else {
-                PHPhotoLibrary.requestAuthorization { (authorizationStatus) in
-                    DispatchQueue.main.async {
-                        handler(authorizationStatus)
-                    }
+            
+            PHPhotoLibrary.requestAuthorization(
+                for: .readWrite
+            ) { (authorizationStatus) in
+                DispatchQueue.main.async {
+                    handler(authorizationStatus)
                 }
             }
+            
         }else {
             handler(status)
         }

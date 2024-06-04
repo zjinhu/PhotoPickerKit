@@ -79,9 +79,7 @@ class EditorVideoControlView: UIView {
         collectionView.delegate = self
         collectionView.showsVerticalScrollIndicator = false
         collectionView.showsHorizontalScrollIndicator = false
-        if #available(iOS 11.0, *) {
-            collectionView.contentInsetAdjustmentBehavior = .never
-        }
+        collectionView.contentInsetAdjustmentBehavior = .never
         collectionView.register(
             EditorVideoControlViewCell.self,
             forCellWithReuseIdentifier: "EditorVideoControlViewCellID"
@@ -106,8 +104,8 @@ class EditorVideoControlView: UIView {
         playButton = UIButton(type: .custom)
         ///xiugai add
         playButton.tintColor = .white
-        playButton.setImage(.imageResource.editor.video.play.image, for: .normal)
-        playButton.setImage(.imageResource.editor.video.pause.image, for: .selected)
+        playButton.setImage(.init(systemName: "play.fill"), for: .normal)
+        playButton.setImage(.init(systemName: "pause.fill"), for: .selected)
         playButton.addTarget(self, action: #selector(didPlayButtonClick), for: .touchUpInside)
         playView = UIVisualEffectView(effect: UIBlurEffect(style: .dark))
         playView.contentView.addSubview(playButton)
@@ -117,9 +115,7 @@ class EditorVideoControlView: UIView {
         
         progressLineView = UIView()
         progressLineView.backgroundColor = .white
-        if #available(iOS 11.0, *) {
-            progressLineView.cornersRound(radius: 2, corner: .allCorners)
-        }
+        progressLineView.cornersRound(radius: 2, corner: .allCorners)
         progressLineView.layer.borderColor = UIColor.black.cgColor
         progressLineView.layer.borderWidth = 0.25
         progressLineView.alpha = 0
@@ -435,10 +431,6 @@ class EditorVideoControlView: UIView {
         if isFirstLoad {
             resetValidRect()
             isFirstLoad = false
-        }
-        guard #available(iOS 11.0, *) else {
-            progressLineView.cornersRound(radius: 2, corner: .allCorners)
-            return
         }
     }
     deinit {

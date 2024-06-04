@@ -12,11 +12,7 @@ extension PhotoTools {
     /// 跳转系统设置界面
     static func openSettingsURL() {
         if let openURL = URL(string: UIApplication.openSettingsURLString) {
-            if #available(iOS 10, *) {
-                UIApplication.shared.open(openURL, options: [:], completionHandler: nil)
-            } else {
-                UIApplication.shared.openURL(openURL)
-            }
+            UIApplication.shared.open(openURL, options: [:], completionHandler: nil)
         }
     }
     

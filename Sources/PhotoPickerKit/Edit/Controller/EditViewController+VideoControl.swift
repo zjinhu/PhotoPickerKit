@@ -1,14 +1,14 @@
 //
-//  EditorViewController+VideoControl.swift
-//  HXPhotoPicker
+//  EditViewController+VideoControl.swift
+//  Edit
 //
-//  Created by Silence on 2023/5/17.
+//  Created by FunWidget on 2024/5/30.
 //
 
 import UIKit
 import AVFoundation
 
-extension EditorViewController: EditorVideoControlViewDelegate {
+extension EditViewController: EditorVideoControlViewDelegate {
     func controlView(_ controlView: EditorVideoControlView, didPlayAt isSelected: Bool) {
         stopPlayVideo()
         if isSelected {

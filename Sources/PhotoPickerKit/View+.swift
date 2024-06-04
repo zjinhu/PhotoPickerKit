@@ -62,9 +62,8 @@ public extension View {
                          cropRatio: cropRatio,
                          done: returnAsset)
                 .statusBar(hidden: true)
-                .background(
-                   Color.black.ignoresSafeArea()
-                )
+                .ignoresSafeArea()
+                
             }else{
                 EmptyView()
             }

@@ -12,23 +12,8 @@ extension EditorAdjusterView {
     
     var isCropedVideo: Bool {
         let cropRatio = getCropOption()
-        var drawLayer: CALayer?
-        if contentView.drawView.count > 0 {
-            drawLayer = contentView.drawView.layer
-        }
-        var stickersLayer: CALayer?
-        if contentView.stickerView.count > 0 {
-            stickersLayer = contentView.stickerView.layer
-        }
-        var canvasImage: UIImage?
-        if #available(iOS 13.0, *) {
-            canvasImage = contentView.isCanvasEmpty ? nil : contentView.canvasImage
-        }
+
         let cropFactor = CropFactor(
-            drawLayer: drawLayer,
-            canvasImage: canvasImage,
-            mosaicLayer: nil,
-            stickersLayer: stickersLayer,
             isCropImage: isCropImage,
             isRound: isCropRund,
             maskImage: maskImage,
@@ -98,15 +83,11 @@ extension EditorAdjusterView {
             }
             return
         }
-        deselectedSticker()
+
         let editAdjustmentData = getData()
         let cropRatio = getCropOption()
         let waterRatio = getVideoWaterCropOption()
         let cropFactor = CropFactor(
-            drawLayer: nil,
-            canvasImage: nil,
-            mosaicLayer: nil,
-            stickersLayer: nil,
             isCropImage: isCropImage,
             isRound: isCropRund,
             maskImage: maskImage,
@@ -129,44 +110,11 @@ extension EditorAdjusterView {
             }
             urlConfig = .init(fileName: fileName, type: .temp)
         }
-        var isDrawVideoMark = contentView.drawView.isVideoMark
-        var layers: [CALayer] = []
-        if contentView.drawView.count > 0 {
-            contentView.drawView.isVideoMark = true
-            layers.append(contentView.drawView.layer)
-        }else {
-            if let lastVideoFator = lastVideoFator,
-               lastVideoFator.watermarkCount > 0 {
-                isDrawVideoMark = false
-            }else {
-                isDrawVideoMark = true
-            }
-        }
-        var isStickerVideoMark = contentView.stickerView.isVideoMark
-        let stickerCount = contentView.stickerView.count
-        if stickerCount > 0 {
-            contentView.stickerView.isVideoMark = true
-        }else {
-            if let lastVideoFator = lastVideoFator,
-               lastVideoFator.stickerCount > 0 {
-                isStickerVideoMark = false
-            }else {
-                isStickerVideoMark = true
-            }
-        }
-        let isFilter: Bool
-        if lastVideoFator?.filter == nil && filter == nil {
-            isFilter = false
-        }else {
-            isFilter = true
-        }
+
         if let lastVideoFator = lastVideoFator,
            lastVideoFator.urlConfig.url.path == urlConfig.url.path,
            lastVideoFator.factor.isEqual(factor),
            lastVideoFator.cropFactor.isEqual(cropFactor),
-           isDrawVideoMark,
-           isStickerVideoMark,
-           !isFilter,
            FileManager.default.fileExists(atPath: urlConfig.url.path) {
             completion(.success(lastVideoFator.videoResult))
             return
@@ -184,18 +132,12 @@ extension EditorAdjusterView {
                 }
             }
         }
-        var watermarkImages: [UIImage] = []
-        if #available(iOS 13.0, *) {
-            if let canvasImage = contentView.isCanvasEmpty ? nil : contentView.canvasImage {
-                watermarkImages.append(canvasImage)
-            }
-        }
-        let watermark: EditorVideoTool.Watermark = .init(layers: layers, images: watermarkImages)
+
+        let watermark: EditorVideoTool.Watermark = .init(layers: [], images: [])
         exportVideo(
             outputURL: urlConfig.url,
             factor: factor,
             watermark: watermark,
-            stickers: contentView.stickerView.getStickerInfo(),
             cropFactor: cropFactor,
             filter: filter,
             progress: progress
@@ -222,8 +164,8 @@ extension EditorAdjusterView {
                         self.lastVideoFator = .init(
                             urlConfig: urlConfig,
                             factor: factor,
-                            watermarkCount: layers.count,
-                            stickerCount: stickerCount,
+                            watermarkCount: 0,
+                            stickerCount: 0,
                             cropFactor: cropFactor,
                             filter: filter,
                             videoResult: videoResult
@@ -242,7 +184,6 @@ extension EditorAdjusterView {
         outputURL: URL,
         factor: EditorVideoFactor,
         watermark: EditorVideoTool.Watermark,
-        stickers: [EditorStickersView.Info],
         cropFactor: CropFactor,
         filter: VideoCompositionFilter? = nil,
         progress: ((CGFloat) -> Void)? = nil,
@@ -258,7 +199,6 @@ extension EditorAdjusterView {
             outputURL: outputURL,
             factor: factor,
             watermark: watermark,
-            stickers: stickers,
             cropFactor: cropFactor,
             maskType: factor.maskType ?? maskType,
             filter: filter

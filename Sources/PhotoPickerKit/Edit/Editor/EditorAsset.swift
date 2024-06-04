@@ -30,7 +30,6 @@ extension EditorAsset {
         case imageData(Data)
         case video(URL)
         case videoAsset(AVAsset)
-        case networkVideo(URL)
          
         public var image: UIImage? {
             switch self {
@@ -49,21 +48,12 @@ extension EditorAsset {
                 return nil
             }
         }
-        
-        public var networkVideoURL: URL? {
-            switch self {
-            case .networkVideo(let url):
-                return url
-            default:
-                return nil
-            }
-        }
-        
+
         public var contentType: EditorContentViewType {
             switch self {
             case .image, .imageData:
                 return .image
-            case .video, .networkVideo, .videoAsset:
+            case .video, .videoAsset:
                 return .video
             }
         }

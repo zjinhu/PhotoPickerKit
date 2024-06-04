@@ -21,21 +21,7 @@ extension EditorAdjusterView {
         beforeRotateViewTransform = rotateView.transform
         beforeScrollViewTransform = scrollView.transform
         beforeScrollViewZoomScale = scrollView.zoomScale / scrollView.minimumZoomScale
-        beforeDrawBrushInfos = contentView.drawView.getBrushData()
-        beforeMosaicDatas = contentView.mosaicView.getMosaicData()
-        beforeStickerItem = contentView.stickerView.getStickerItem()
-        if #available(iOS 13.0, *), let canvasView = contentView.canvasView as? EditorCanvasView {
-            beforeCanvasCurrentData = canvasView.currentData
-            beforeCanvasHistoryData = canvasView.historyData
-            canvasView.isClear = true
-            canvasView.undoAll()
-            canvasView.isClear = false
-        }
-        
-        contentView.drawView.undoAll()
-        contentView.mosaicView.undoAll()
-        contentView.stickerView.removeAllSticker()
-        
+
         CATransaction.begin()
         CATransaction.setDisableActions(true)
         mirrorView.transform = .identity
@@ -55,14 +41,6 @@ extension EditorAdjusterView {
         rotateView.transform = beforeRotateViewTransform
         scrollView.transform = beforeScrollViewTransform
         CATransaction.commit()
-        
-        contentView.drawView.setBrushData(beforeDrawBrushInfos, viewSize: contentView.bounds.size)
-        contentView.mosaicView.setMosaicData(mosaicDatas: beforeMosaicDatas, viewSize: contentView.bounds.size)
-        contentView.stickerView.setStickerItem(beforeStickerItem, viewSize: contentView.bounds.size)
-        if #available(iOS 13.0, *), let canvasView = contentView.canvasView as? EditorCanvasView {
-            canvasView.setCurrentData(beforeCanvasCurrentData, viewSize: contentView.bounds.size)
-            canvasView.setHistoryData(beforeCanvasHistoryData, viewSize: contentView.bounds.size)
-        }
         
         let controlScale = frameView.controlView.size.height / frameView.controlView.size.width
         let beforeZoomScale = beforeScrollViewZoomScale

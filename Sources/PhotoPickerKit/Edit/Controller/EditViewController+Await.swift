@@ -1,21 +1,19 @@
 //
-//  EditorViewController+Await.swift
-//  HXPhotoPicker
+//  EditViewController+Await.swift
+//  Edit
 //
-//  Created by Silence on 2023/7/22.
-//  Copyright © 2023 Silence. All rights reserved.
+//  Created by FunWidget on 2024/6/3.
 //
 
 import UIKit
 
-@available(iOS 13.0.0, *)
-public extension EditorViewController {
+public extension EditViewController {
     
     @MainActor
     static func edit(
         _ asset: EditorAsset,
         config: EditorConfiguration = .init(),
-        delegate: EditorViewControllerDelegate? = nil,
+        delegate: EditViewControllerDelegate? = nil,
         fromVC: UIViewController? = nil
     ) async throws -> EditorAsset {
         let vc = show(asset, config: config, delegate: delegate, fromVC: fromVC)
@@ -27,11 +25,11 @@ public extension EditorViewController {
     static func show(
         _ asset: EditorAsset,
         config: EditorConfiguration = .init(),
-        delegate: EditorViewControllerDelegate? = nil,
+        delegate: EditViewControllerDelegate? = nil,
         fromVC: UIViewController? = nil
-    ) -> EditorViewController {
+    ) -> EditViewController {
         let topVC = fromVC ?? UIViewController.topViewController
-        let vc = EditorViewController(asset, config: config, delegate: delegate)
+        let vc = EditViewController(asset, config: config, delegate: delegate)
         topVC?.present(vc, animated: true)
         return vc
     }

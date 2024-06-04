@@ -10,9 +10,7 @@ import UIKit
 extension EditorAdjusterView {
     
     func startEdit(_ animated: Bool, completion: (() -> Void)? = nil) {
-        contentView.isDrawEnabled = false
-        contentView.isMosaicEnabled = false
-        contentView.isStickerEnabled = false
+
         if state == .edit {
             resetState()
             frameView.isControlEnable = true
@@ -193,7 +191,7 @@ extension EditorAdjusterView {
         }else {
             frameView.hideImageMaskView(animated)
         }
-        contentView.stickerView.angle = oldAdjustedFactor?.angle ?? 0
+
         updateFrameView(
             maskRect: maskRect,
             zoomScale: zoomScale,
@@ -205,14 +203,7 @@ extension EditorAdjusterView {
             self.delegate?.editorAdjusterView(editDidDisappear: self)
             self.clipsToBounds = true
             self.frameView.hideVideoSilder(true)
-            if let oldAdjustedFactor = self.oldAdjustedFactor {
-                self.contentView.stickerMirrorScale = .init(
-                    x: oldAdjustedFactor.mirrorTransform.a,
-                    y: oldAdjustedFactor.mirrorTransform.d
-                )
-            }else {
-                self.contentView.stickerMirrorScale = .init(x: 1, y: 1)
-            }
+
         }
     }
     
@@ -277,7 +268,6 @@ extension EditorAdjusterView {
                 completion?()
                 self?.clipsToBounds = true
                 self?.frameView.hideVideoSilder(true)
-                self?.contentView.stickerView.resetMirror()
             }
             return
         }
@@ -303,7 +293,6 @@ extension EditorAdjusterView {
             completion?()
             self.delegate?.editorAdjusterView(editDidDisappear: self)
             self.frameView.hideVideoSilder(true)
-            self.contentView.stickerView.resetMirror()
         }
     }
     
@@ -483,7 +472,6 @@ extension EditorAdjusterView {
                     )
             )
         }
-        contentView.stickerView.initialMirror(.init(x: mirrorView.transform.a, y: mirrorView.transform.d))
         updateScrollViewContent(
             contentInset: scrollViewContentInset,
             zoomScale: zoomScale,

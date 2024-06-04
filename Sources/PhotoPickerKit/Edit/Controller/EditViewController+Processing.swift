@@ -1,16 +1,15 @@
 //
-//  EditorViewController+Processing.swift
-//  HXPhotoPicker
+//  EditViewController+Processing.swift
+//  Edit
 //
-//  Created by Silence on 2023/7/22.
-//  Copyright © 2023 Silence. All rights reserved.
+//  Created by FunWidget on 2024/5/30.
 //
 
 import UIKit
 import AVFoundation
 import Photos
 
-extension EditorViewController {
+extension EditViewController {
     var isEdited: Bool {
         var isCropTime: Bool = false
         if selectedAsset.contentType == .video {
@@ -18,37 +17,19 @@ extension EditorViewController {
                 isCropTime = true
             }
         }
-        var isSelectMusic: Bool = false
-        if selectedMusicURL != nil {
-            isSelectMusic = true
-        }
-        if !isSelectedOriginalSound {
-            isSelectMusic = true
-        }
-        if videoVolume < 1 {
-            isSelectMusic = true
-        }
+
         var isCropSize: Bool = false
         if selectedAsset.contentType == .image {
             isCropSize = editorView.isCropedImage
         }else if selectedAsset.contentType == .video {
             isCropSize = editorView.isCropedVideo
         }
-        var isFilterEdited: Bool = false
-        if filterEditFator.isApply {
-            isFilterEdited = true
-        }
-        var isSelectFilter: Bool = false
-        if selectedAsset.contentType == .image {
-            isSelectFilter = imageFilter != nil
-        }else if selectedAsset.contentType == .video {
-            isSelectFilter = videoFilter != nil
-        }
-        return isCropTime || isSelectMusic || isCropSize || isFilterEdited || isSelectFilter
+
+        return isCropTime || isCropSize
     }
 }
 
-extension EditorViewController {
+extension EditViewController {
     func processing() {
         switch selectedAsset.contentType {
         case .image:
@@ -58,12 +39,11 @@ extension EditorViewController {
         default:
             break
         }
-        view.bringSubviewToFront(cancelButton)
     }
     
     func imageProcessing() {
-        if editorView.isCropedImage || imageFilter != nil || filterEditFator.isApply {
-            PhotoManager.HUDView.show(with: .textManager.editor.processingHUDTitle.text, delay: 0, animated: true, addedTo: view)
+        if editorView.isCropedImage {
+            PhotoManager.HUDView.show(with: "正在处理...", delay: 0, animated: true, addedTo: view)
             if editorView.isCropedImage {
                 editorView.cropImage { [weak self] result in
                     guard let self = self else { return }
@@ -72,7 +52,7 @@ extension EditorViewController {
                     case .success(let imageResult):
                         self.imageProcessCompletion(imageResult)
                     case .failure:
-                        PhotoManager.HUDView.showInfo(with: .textManager.editor.processingFailedHUDTitle.text, delay: 1.5, animated: true, addedTo: self.view)
+                        PhotoManager.HUDView.showInfo(with: "处理失败", delay: 1.5, animated: true, addedTo: self.view)
                     }
                 }
             }else {
@@ -82,7 +62,7 @@ extension EditorViewController {
                     }
                     PhotoManager.HUDView.dismiss(delay: 0, animated: true, for: self.view)
                     guard let result = $0 else {
-                        PhotoManager.HUDView.showInfo(with: .textManager.editor.processingFailedHUDTitle.text, delay: 1.5, animated: true, addedTo: self.view)
+                        PhotoManager.HUDView.showInfo(with: "处理失败", delay: 1.5, animated: true, addedTo: self.view)
                         return
                     }
                     self.imageProcessCompletion(result)
@@ -92,7 +72,6 @@ extension EditorViewController {
             editedResult = nil
             selectedAsset.result = nil
             delegate?.editorViewController(self, didFinish: selectedAsset)
-//            delegate?.editorViewController(self, didFinish: [])
             finishHandler?(selectedAsset, self)
             backClick()
         }
@@ -162,22 +141,13 @@ extension EditorViewController {
     
     func imageProcessCompletion(_ result: ImageEditedResult) {
         let imageEditedResult: ImageEditedData
-        var filter: PhotoEditorFilter?
-        var filterEdit: EditorFilterEditFator?
         let aspectRatio = editorView.aspectRatio
-        let angle = lastScaleAngle
         let isFixedRatio = editorView.isFixedRatio
-        if imageFilter != nil || filterEditFator.isApply {
-            filter = imageFilter
-            filterEdit = filterEditFator
-        }
         imageEditedResult = .init(
-            filter: filter,
-            filterEdit: filterEdit,
             cropSize: .init(
                 isFixedRatio: isFixedRatio,
-                aspectRatio: aspectRatio,
-                angle: angle
+                aspectRatio: aspectRatio, 
+                angle: 0
             )
         )
         let editedResult = EditedResult.image(result, imageEditedResult)
@@ -185,59 +155,28 @@ extension EditorViewController {
         selectedAsset.result = editedResult
         delegate?.editorViewController(self, didFinish: selectedAsset)
         finishHandler?(selectedAsset, self)
-//        delegate?.editorViewController(self, didFinish: [editedResult])
         backClick()
     }
     
     func videoProcessing() {
         let isCropTime: Bool = editorView.videoDuration.seconds != videoControlView.middleDuration
-        var isSelectMusic: Bool = false
-        if selectedMusicURL != nil {
-            isSelectMusic = true
-        }
-        if !isSelectedOriginalSound {
-            isSelectMusic = true
-        }
-        if videoVolume < 1 {
-            isSelectMusic = true
-        }
-        if editorView.isCropedVideo || videoFilter != nil || filterEditFator.isApply || isSelectMusic || isCropTime {
+ 
+        if editorView.isCropedVideo || isCropTime {
             let timeRange: CMTimeRange
             if isCropTime {
                 timeRange = .init(start: videoControlView.startTime, end: videoControlView.endTime)
             }else {
                 timeRange = .zero
             }
-            var audios: [EditorVideoFactor.Audio] = []
-            if let musicURL = selectedMusicURL {
-                let volume = musicPlayer?.volume ?? 1
-                let audioURL: URL?
-                switch musicURL {
-                case .network(let url):
-                    audioURL = PhotoTools.getAudioTmpURL(for: url.absoluteString)
-                default:
-                    audioURL = musicURL.url
-                }
-                if let audioURL = audioURL {
-                    audios.append(.init(url: audioURL, volume: volume))
-                }
-            }
-            let videoVolume: Float
-            if isSelectedOriginalSound {
-                videoVolume = self.videoVolume
-            }else {
-                videoVolume = 0
-            }
+
             let factor = EditorVideoFactor(
                 timeRang: timeRange,
-                volume: videoVolume,
-                audios: audios,
                 maskType: config.cropSize.maskType,
                 preset: config.video.preset,
                 quality: config.video.quality
             )
             if editorView.isCropedVideo {
-                let progressView = PhotoManager.HUDView.showProgress(with: .textManager.editor.processingHUDTitle.text, progress: 0, animated: true, addedTo: view)
+                let progressView = PhotoManager.HUDView.showProgress(with: "正在处理...", progress: 0, animated: true, addedTo: view)
                 editorView.cropVideo(
                     factor: factor
                 ) { [weak self] in
@@ -264,12 +203,12 @@ extension EditorViewController {
                         if error.isCancel {
                             return
                         }
-                        PhotoManager.HUDView.showInfo(with: .textManager.editor.processingFailedHUDTitle.text, delay: 1.5, animated: true, addedTo: self.view)
+                        PhotoManager.HUDView.showInfo(with: "处理失败", delay: 1.5, animated: true, addedTo: self.view)
                     }
                 }
             }else {
-                if config.isFixedCropSizeState && config.isIgnoreCropTimeWhenFixedCropSizeState {
-                    if (videoFilter != nil || filterEditFator.isApply || isSelectMusic) && !isCropTime {
+                if config.isIgnoreCropTimeWhenFixedCropSizeState {
+                    if !isCropTime {
                         videoFilterProcessing(factor)
                     }else {
                         editedResult = nil
@@ -287,46 +226,26 @@ extension EditorViewController {
             selectedAsset.result = nil
             delegate?.editorViewController(self, didFinish: selectedAsset)
             finishHandler?(selectedAsset, self)
-//            delegate?.editorViewController(self, didFinish: [])
             backClick()
         }
     }
     
     func videoFilterHandler(_ pixelBuffer: CVPixelBuffer, at time: CMTime) -> CVPixelBuffer? {
-        var ciImage = CIImage(cvPixelBuffer: pixelBuffer)
-        let size = CGSize(
+        _ = CIImage(cvPixelBuffer: pixelBuffer)
+        _ = CGSize(
             width: CVPixelBufferGetWidth(pixelBuffer),
             height: CVPixelBufferGetHeight(pixelBuffer)
         )
-        if let videoFilter = videoFilter,
-           let videoFilterInfo = videoFilterInfo {
-            if filterEditFator.isApply, let image = ciImage.apply(filterEditFator) {
-                ciImage = image
-            }
-            if let resultImage = videoFilterInfo.videoFilterHandler?(ciImage.clampedToExtent(), videoFilter.parameters),
-               let newPixelBuffer = PhotoTools.createPixelBuffer(size) {
-                imageFilterContext.render(resultImage, to: newPixelBuffer)
-                return newPixelBuffer
-            }
-        }else {
-            if filterEditFator.isApply {
-                if let image = ciImage.apply(filterEditFator),
-                   let newPixelBuffer = PhotoTools.createPixelBuffer(size) {
-                    imageFilterContext.render(image, to: newPixelBuffer)
-                    return newPixelBuffer
-                }
-            }
-        }
         return nil
     }
     
     func videoFilterProcessing(_ factor: EditorVideoFactor) {
         guard let avAsset = editorView.avAsset else {
             PhotoManager.HUDView.dismiss(delay: 0, animated: true, for: self.view)
-            PhotoManager.HUDView.showInfo(with: .textManager.editor.processingFailedHUDTitle.text, delay: 1.5, animated: true, addedTo: self.view)
+            PhotoManager.HUDView.showInfo(with: "处理失败", delay: 1.5, animated: true, addedTo: self.view)
             return
         }
-        let progressView = PhotoManager.HUDView.showProgress(with: .textManager.editor.processingHUDTitle.text, progress: 0, animated: true, addedTo: view)
+        let progressView = PhotoManager.HUDView.showProgress(with: "正在处理...", progress: 0, animated: true, addedTo: view)
         let urlConfig: EditorURLConfig
         if let _urlConfig = config.urlConfig {
             urlConfig = _urlConfig
@@ -377,7 +296,7 @@ extension EditorViewController {
                 if error.isCancel {
                     return
                 }
-                PhotoManager.HUDView.showInfo(with: .textManager.editor.processingFailedHUDTitle.text, delay: 1.5, animated: true, addedTo: self.view)
+                PhotoManager.HUDView.showInfo(with: "处理失败", delay: 1.5, animated: true, addedTo: self.view)
             }
         }
         self.videoTool = videoTool
@@ -387,15 +306,8 @@ extension EditorViewController {
         _ result: VideoEditedResult
     ) {
         let editedData: VideoEditedData
-        var filter: VideoEditorFilter?
-        var filterEdit: EditorFilterEditFator?
         let aspectRatio = editorView.aspectRatio
-        let angle = lastScaleAngle
         let isFixedRatio = editorView.isFixedRatio
-        if videoFilter != nil || filterEditFator.isApply {
-            filter = videoFilter
-            filterEdit = filterEditFator
-        }
         var cropTime: EditorVideoCropTime?
         let isCropTime: Bool = editorView.videoDuration.seconds != videoControlView.middleDuration
         if isCropTime {
@@ -406,23 +318,13 @@ extension EditorViewController {
                 controlInfo: videoControlView.controlInfo
             )
         }
-        let music = musicPlayer?.music
+
         editedData = .init(
-            music: .init(
-                hasOriginalSound: isSelectedOriginalSound,
-                videoSoundVolume: videoVolume,
-                backgroundMusicURL: selectedMusicURL,
-                backgroundMusicVolume: musicVolume,
-                musicIdentifier: musicPlayer?.audio?.identifier,
-                music: music
-            ),
             cropTime: cropTime,
-            filterEdit: filterEdit,
-            filter: filter,
             cropSize: .init(
                 isFixedRatio: isFixedRatio,
                 aspectRatio: aspectRatio,
-                angle: angle
+                angle: 0
             )
         )
         let editedResult = EditedResult.video(result, editedData)
@@ -435,15 +337,10 @@ extension EditorViewController {
     }
 }
 
-extension EditorViewController {
+extension EditViewController {
     
     func backClick(_ isCancel: Bool = false) {
-        switch selectedAsset.type {
-        case .networkVideo(let url):
-            PhotoManager.shared.suspendTask(url)
-        default:
-            break
-        }
+
         PhotoManager.HUDView.dismiss(delay: 0, animated: true, for: view)
         removeVideo()
         if isCancel {
@@ -464,7 +361,7 @@ extension EditorViewController {
     }
 }
 
-extension EditorViewController {
+extension EditViewController {
     func startPlayVideo() {
         if videoControlView.startDuration == videoControlView.currentDuration {
             startPlayVideoTimer()

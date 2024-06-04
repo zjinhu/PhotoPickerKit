@@ -56,9 +56,8 @@ struct GalleryPageView: View {
                         }
                                  .statusBar(hidden: true)
                                  .navigationBarHidden(true)
-                                 .background(
-                                    Color.black.ignoresSafeArea()
-                                 )
+                                 .ignoresSafeArea()
+                                 
                     }
                     
                 } label: {

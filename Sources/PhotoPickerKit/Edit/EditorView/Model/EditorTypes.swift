@@ -31,32 +31,6 @@ public enum EditorContentViewType {
     case video
 }
 
-public enum EditorDarwType: Int, Codable {
-    case normal
-    case canvas
-}
-
-public enum EditorMosaicType: Int, Codable {
-    /// 马赛克
-    case mosaic
-    /// 涂抹
-    case smear
-}
-
-public class EditorStickersItemBaseView: UIView {
-    public var isSelected: Bool = false
-    
-    public var text: EditorStickerText? {
-        item.text
-    }
-    
-    public var audio: EditorStickerAudio? {
-        item.audio
-    }
-    
-    var item: EditorStickerItem!
-}
-
 public enum EditorError: LocalizedError, CustomStringConvertible {
     
     public enum `Type` {

@@ -43,7 +43,7 @@ struct ContentView: View {
                                maxSelectionCount: 5,
                                selectTitle: "Videos",
                                autoCrop: true,
-                               cropRatio: .init(width: 1, height: 3),
+                               cropRatio: .zero,
                                onlyImage: false,
                                selected: $selectItem.pictures)
                 
@@ -54,8 +54,8 @@ struct ContentView: View {
                 }
                 .photoPicker(isPresented: $showPicker,
                              selected: $selectedItems,
-                             maxSelectionCount: 5,
-                             matching: .any(of: [.images, .livePhotos, .videos]))
+                             maxSelectionCount: 1,
+                             matching: .any(of: [.images]))
                 .onChange(of: selectedItems) { newItems in
                     var images = [UIImage]()
                     Task{
@@ -78,6 +78,7 @@ struct ContentView: View {
                                 .resizable()
                                 .scaledToFit()
                                 .frame(width: 250, height: 250)
+                                
                         }
                     }
                     
@@ -115,7 +116,7 @@ struct ContentView: View {
             }
         }
         .editPicker(isPresented: $isPresentedCrop,
-                    cropRatio: .init(width: 1, height: 1),
+                    cropRatio: .zero,
                     asset: selectItem.selectedAsset) { asset in
             selectItem.pictures.replaceSubrange(selectItem.selectedIndex...selectItem.selectedIndex, with: [asset])
         }

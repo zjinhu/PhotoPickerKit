@@ -42,11 +42,6 @@ class EditorVideoControlMaskView: UIView {
                 height: 4
             )
             drawMaskLayer()
-            guard #available(iOS 11.0, *) else {
-                leftControl.cornersRound(radius: 4, corner: [.topLeft, .bottomLeft])
-                rightControl.cornersRound(radius: 4, corner: [.topRight, .bottomRight])
-                return
-            }
         }
     }
     var isShowFrame: Bool = false
@@ -80,28 +75,24 @@ class EditorVideoControlMaskView: UIView {
         bottomView.backgroundColor = .clear
         addSubview(bottomView)
         
-        leftImageView = UIImageView(image: .imageResource.editor.video.leftArrow.image?.withRenderingMode(.alwaysTemplate))
+        leftImageView = UIImageView(image: .init(systemName: "chevron.compact.left")?.withRenderingMode(.alwaysTemplate))
         leftImageView.size = leftImageView.image?.size ?? .zero
         leftImageView.tintColor = arrowNormalColor
         leftControl = UIView()
         leftControl.tag = 0
-        if #available(iOS 11.0, *) {
-            leftControl.cornersRound(radius: 4, corner: [.topLeft, .bottomLeft])
-        }
+        leftControl.cornersRound(radius: 4, corner: [.topLeft, .bottomLeft])
         leftControl.addSubview(leftImageView)
         let leftControlPanGR = PhotoPanGestureRecognizer(target: self, action: #selector(panGestureRecognizerAction(panGR:)))
         leftControl.addGestureRecognizer(leftControlPanGR)
         addSubview(leftControl)
         
-        rightImageView = UIImageView(image: .imageResource.editor.video.rightArrow.image?.withRenderingMode(.alwaysTemplate))
+        rightImageView = UIImageView(image: .init(systemName: "chevron.compact.right")?.withRenderingMode(.alwaysTemplate))
         rightImageView.size = rightImageView.image?.size ?? .zero
         rightImageView.tintColor = arrowNormalColor
         rightControl = UIView()
         rightControl.tag = 1
         rightControl.addSubview(rightImageView)
-        if #available(iOS 11.0, *) {
-            rightControl.cornersRound(radius: 4, corner: [.topRight, .bottomRight])
-        }
+        rightControl.cornersRound(radius: 4, corner: [.topRight, .bottomRight])
         let rightControlPanGR = PhotoPanGestureRecognizer(target: self, action: #selector(panGestureRecognizerAction(panGR:)))
         rightControl.addGestureRecognizer(rightControlPanGR)
         addSubview(rightControl)

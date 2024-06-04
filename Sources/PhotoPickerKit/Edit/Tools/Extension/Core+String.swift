@@ -11,7 +11,7 @@ import CommonCrypto
 import CoreServices
 import UniformTypeIdentifiers
 
-extension String: HXPickerCompatibleValue {
+extension String {
 
     var color: UIColor {
         if isEmpty {
@@ -21,24 +21,7 @@ extension String: HXPickerCompatibleValue {
     }
     
     var image: UIImage? { UIImage.image(for: self) }
-    
-    static var imageResource: HX.ImageResource {
-        .shared
-    }
-    
-    static var textManager: HX.TextManager {
-        .shared
-    }
 
-    var lrc: String? {
-        var lrcString: String?
-        if let bundle = PhotoManager.shared.bundle,
-           let path = bundle.path(forResource: "musics", ofType: nil) {
-            lrcString = try? String(contentsOfFile: path + "/" + self)
-        }
-        return lrcString
-    }
-    
     var md5: String {
         guard let data = data(using: .utf8) else {
             return self
@@ -168,12 +151,6 @@ extension String: HXPickerCompatibleValue {
         return nil
     }
 }
-
-public extension HXPickerWrapper where Base == String {
-    var localized: String { base.localized }
-    var color: UIColor { base.color }
-}
-
 
 // array of bytes, little-endian representation
 fileprivate func arrayOfBytes<T>(_ value: T, length: Int? = nil) -> [UInt8] {

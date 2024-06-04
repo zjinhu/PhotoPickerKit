@@ -159,27 +159,7 @@ open class EditorView: UIScrollView {
             layoutContent = false
         }
     }
-    
-    open override func hitTest(_ point: CGPoint, with event: UIEvent?) -> UIView? {
-        let view = super.hitTest(point, with: event)
-        if view == adjusterView.containerView {
-            if isDrawEnabled {
-                return adjusterView.contentView.drawView
-            }
-            if isMosaicEnabled {
-                return adjusterView.contentView.mosaicView
-            }
-        }
-        return view
-    }
-    
-    open override func point(inside point: CGPoint, with event: UIEvent?) -> Bool {
-        if isDrawEnabled, drawType == .canvas {
-            return adjusterView.point(inside: point, with: event)
-        }
-        return super.point(inside: point, with: event)
-    }
-    
+
     required public init?(coder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
     }
@@ -196,9 +176,7 @@ extension EditorView {
         showsHorizontalScrollIndicator = false
         clipsToBounds = false
         scrollsToTop = false
-        if #available(iOS 11.0, *) {
             contentInsetAdjustmentBehavior = .never
-        }
         adjusterView = EditorAdjusterView(maskColor: maskColor)
         adjusterView.delegate = self
         adjusterView.setContentInsets = { [weak self] in
@@ -332,8 +310,6 @@ extension EditorView {
             adjusterView.state = .normal
             resetZoomScale(false)
         }
-        undoAllDraw()
-        undoAllMosaic()
     }
     
     func resetEdit() {

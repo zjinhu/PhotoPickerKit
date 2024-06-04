@@ -8,20 +8,17 @@
 
 import UIKit
 
-class HXPhotoPicker {}
-
 public enum Photo {
 
-    @available(iOS 13.0, *)
     @discardableResult
     @MainActor
     public static func edit(
         _ asset: EditorAsset,
         config: EditorConfiguration = .init(),
-        delegate: EditorViewControllerDelegate? = nil,
+        delegate: EditViewControllerDelegate? = nil,
         fromVC: UIViewController? = nil
     ) async throws -> EditorAsset {
-        try await EditorViewController.edit(asset, config: config, delegate: delegate, fromVC: fromVC)
+        try await EditViewController.edit(asset, config: config, delegate: delegate, fromVC: fromVC)
     }
     
     @discardableResult
@@ -29,10 +26,10 @@ public enum Photo {
         asset: EditorAsset,
         config: EditorConfiguration,
         sender: UIViewController? = nil,
-        finished: EditorViewController.FinishHandler? = nil,
-        cancelled: EditorViewController.CancelHandler? = nil
-    ) -> EditorViewController {
-        let vc = EditorViewController(
+        finished: EditViewController.FinishHandler? = nil,
+        cancelled: EditViewController.CancelHandler? = nil
+    ) -> EditViewController {
+        let vc = EditViewController(
             asset,
             config: config,
             finish: finished,
@@ -53,14 +50,13 @@ public enum Photo {
 }
 
 public enum HX {
-   
-    @available(iOS 13.0, *)
+
     @discardableResult
     @MainActor
     public static func edit(
         _ asset: EditorAsset,
         config: EditorConfiguration = .init(),
-        delegate: EditorViewControllerDelegate? = nil,
+        delegate: EditViewControllerDelegate? = nil,
         fromVC: UIViewController? = nil
     ) async throws -> EditorAsset {
         try await Photo.edit(asset, config: config, delegate: delegate, fromVC: fromVC)
@@ -73,26 +69,5 @@ public enum HX {
         case fit
         /// 如果`targetSize`的比例与原图不一样则居中显示
         case center
-    }
-}
-
-public struct HXPickerWrapper<Base> {
-    public let base: Base
-    public init(_ base: Base) {
-        self.base = base
-    }
-}
-public protocol HXPickerCompatible: AnyObject { }
-public protocol HXPickerCompatibleValue {}
-extension HXPickerCompatible {
-    public var hx: HXPickerWrapper<Self> {
-        get { return HXPickerWrapper(self) }
-        set { } // swiftlint:disable:this unused_setter_value
-    }
-}
-extension HXPickerCompatibleValue {
-    public var hx: HXPickerWrapper<Self> {
-        get { return HXPickerWrapper(self) }
-        set { } // swiftlint:disable:this unused_setter_value
     }
 }

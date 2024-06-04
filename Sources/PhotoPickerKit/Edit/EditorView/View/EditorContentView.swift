@@ -7,7 +7,6 @@
 
 import UIKit
 import AVFoundation
-import PencilKit
 
 protocol EditorContentViewDelegate: AnyObject {
     func contentView(_ contentView: EditorContentView, videoDidPlayAt time: CMTime)
@@ -18,34 +17,9 @@ protocol EditorContentViewDelegate: AnyObject {
     func contentView(_ contentView: EditorContentView, readyToPlay duration: CMTime)
     func contentView(_ contentView: EditorContentView, didChangedBuffer time: CMTime)
     func contentView(_ contentView: EditorContentView, didChangedTimeAt time: CMTime)
-    
-    func contentView(drawViewBeginDraw contentView: EditorContentView)
-    func contentView(drawViewEndDraw contentView: EditorContentView)
-    func contentView(_ contentView: EditorContentView, didTapSticker itemView: EditorStickersItemView)
-    func contentView(_ contentView: EditorContentView, shouldRemoveSticker itemView: EditorStickersItemView)
-    func contentView(_ contentView: EditorContentView, didRemovedSticker itemView: EditorStickersItemView)
-    func contentView(_ contentView: EditorContentView, resetItemViews itemViews: [EditorStickersItemBaseView])
-    func contentView(_ contentView: EditorContentView, shouldAddAudioItem audio: EditorStickerAudio) -> Bool
-    
-    func contentView(
-        _ contentView: EditorContentView,
-        stickersView: EditorStickersView,
-        moveToCenter itemView: EditorStickersItemView
-    ) -> Bool
-    func contentView(_ contentView: EditorContentView, stickerMaxScale itemSize: CGSize) -> CGFloat
-    func contentView(_ contentView: EditorContentView, stickerItemCenter stickersView: EditorStickersView) -> CGPoint?
+
     func contentView(rotateVideo contentView: EditorContentView)
     func contentView(resetVideoRotate contentView: EditorContentView)
-    
-    func contentView(
-        _ contentView: EditorContentView,
-        videoApplyFilter sourceImage: CIImage,
-        at time: CMTime
-    ) -> CIImage
-    
-    @available(iOS 13.0, *)
-    func contentView(_ contentView: EditorContentView, toolPickerFramesObscuredDidChange toolPicker: PKToolPicker)
-    
 }
 
 class EditorContentView: UIView {
@@ -148,174 +122,8 @@ class EditorContentView: UIView {
         set { videoView.isPlayToEndTimeAutoPlay = newValue }
     }
     
-    var mosaicOriginalImage: UIImage? {
-        get { mosaicView.originalImage }
-        set {
-            mosaicView.originalImage = newValue
-        }
-    }
-    
-    var mosaicOriginalCGImage: CGImage? {
-        get { mosaicView.originalCGImage }
-        set { mosaicView.originalCGImage = newValue }
-    }
-
     /// 缩放比例
-    var zoomScale: CGFloat = 1 {
-        didSet {
-            if #available(iOS 13.0, *), let canvasView = canvasView as? EditorCanvasView {
-                canvasView.scale = zoomScale
-            }
-            drawView.scale = zoomScale
-            mosaicView.scale = zoomScale
-            stickerView.scale = zoomScale
-        }
-    }
-    
-    var drawType: EditorDarwType = .normal {
-        didSet {
-            switch drawType {
-            case .normal:
-                drawView.isHidden = false
-                if #available(iOS 13.0, *) {
-                    canvasView.isHidden = true
-                }
-            case .canvas:
-                if #available(iOS 13.0, *) {
-                    drawView.isHidden = true
-                    canvasView.isHidden = false
-                }
-            }
-        }
-    }
-    
-    var isDrawEnabled: Bool {
-        get {
-            if drawType == .canvas {
-                return canvasView.isUserInteractionEnabled
-            }
-            return drawView.isEnabled
-        }
-        set {
-            if drawType == .normal {
-                drawView.isEnabled = newValue
-            }
-            stickerView.deselectedSticker()
-        }
-    }
-    
-    var drawLineWidth: CGFloat {
-        get { drawView.lineWidth }
-        set { drawView.lineWidth = newValue }
-    }
-    
-    var drawLineColor: UIColor {
-        get { drawView.lineColor }
-        set { drawView.lineColor = newValue }
-    }
-    
-    var isCanUndoDraw: Bool {
-        drawView.isCanUndo
-    }
-    
-    func undoDraw() {
-        drawView.undo()
-    }
-    
-    func undoAllDraw() {
-        drawView.undoAll()
-    }
-    
-    var isMosaicEnabled: Bool {
-        get { mosaicView.isEnabled }
-        set {
-            mosaicView.isEnabled = newValue
-            stickerView.deselectedSticker()
-        }
-    }
-    var mosaicWidth: CGFloat {
-        get { mosaicView.mosaicLineWidth }
-        set { mosaicView.mosaicLineWidth = newValue }
-    }
-    var smearWidth: CGFloat {
-        get { mosaicView.imageWidth }
-        set { mosaicView.imageWidth = newValue }
-    }
-    var mosaicType: EditorMosaicType {
-        get { mosaicView.type }
-        set { mosaicView.type = newValue }
-    }
-    var isCanUndoMosaic: Bool {
-        mosaicView.isCanUndo
-    }
-    func undoMosaic() {
-        mosaicView.undo()
-    }
-    func undoAllMosaic() {
-        mosaicView.undoAll()
-    }
-    
-    var isStickerEnabled: Bool {
-        get { stickerView.isEnabled }
-        set { stickerView.isEnabled = newValue }
-    }
-    
-    var stickerCount: Int {
-        stickerView.count
-    }
-    
-    var isStickerShowTrash: Bool {
-        get { stickerView.isShowTrash }
-        set { stickerView.isShowTrash = newValue }
-    }
-    
-    var stickerMirrorScale: CGPoint {
-        get { stickerView.mirrorScale }
-        set { stickerView.mirrorScale = newValue }
-    }
-    
-    func addSticker(
-        _ item: EditorStickerItem,
-        isSelected: Bool = false
-    ) -> EditorStickersItemBaseView {
-        stickerView.add(sticker: item, isSelected: isSelected)
-    }
-    
-    func removeSticker(at itemView: EditorStickersItemBaseView) {
-        stickerView.removeSticker(at: itemView)
-    }
-    
-    func removeAllSticker() {
-        stickerView.removeAllSticker()
-    }
-    
-    func updateSticker(
-        _ text: EditorStickerText
-    ) {
-        stickerView.update(text: text)
-    }
-    
-    func deselectedSticker() {
-        stickerView.deselectedSticker()
-    }
-    
-    func showStickersView() {
-        if stickerView.alpha == 1 {
-            return
-        }
-        UIView.animate(withDuration: 0.2) {
-            self.stickerView.alpha = 1
-        }
-    }
-    
-    func hideStickersView() {
-        if stickerView.alpha == 0 {
-            return
-        }
-        UIView.animate(withDuration: 0.2) {
-            self.stickerView.alpha = 0
-        }
-    }
+    var zoomScale: CGFloat = 1
     
     var type: EditorContentViewType = .unknown {
         willSet {
@@ -328,11 +136,9 @@ class EditorContentView: UIView {
             case .image:
                 videoView.isHidden = true
                 imageView.isHidden = false
-                mosaicView.isHidden = false
             case .video:
                 videoView.isHidden = false
                 imageView.isHidden = true
-                mosaicView.isHidden = true
             default:
                 break
             }
@@ -348,60 +154,30 @@ class EditorContentView: UIView {
     override func layoutSubviews() {
         super.layoutSubviews()
         imageView.frame = bounds
-        mosaicView.frame = bounds
         if videoView.superview == self {
             if !bounds.size.equalTo(.zero) {
                 videoView.frame = bounds
             }
         }
-        if #available(iOS 13.0, *) {
-            canvasView.frame = bounds
-        }
-        drawView.frame = bounds
-        stickerView.frame = bounds
     }
     
     // MARK: SubViews
     var imageView: ImageView!
     var videoView: EditorVideoPlayerView!
-    var canvasView: UIView!
-    var drawView: EditorDrawView!
-    var mosaicView: EditorMosaicView!
-    var stickerView: EditorStickersView!
-    
+
     private func initViews() {
         imageView = ImageView()
         imageView.contentMode = .scaleAspectFill
         imageView.clipsToBounds = true
         imageView.isHidden = true
         addSubview(imageView)
-        
-        mosaicView = EditorMosaicView()
-        mosaicView.delegate = self
-        mosaicView.isHidden = true
-        addSubview(mosaicView)
-        
+
         videoView = EditorVideoPlayerView()
         videoView.size = UIDevice.screenSize
         videoView.delegate = self
         videoView.isHidden = true
         addSubview(videoView)
-        
-        if #available(iOS 13.0, *) {
-            let canvasView = EditorCanvasView()
-            canvasView.delegate = self
-            canvasView.isHidden = true
-            addSubview(canvasView)
-            self.canvasView = canvasView
-        }
-        
-        drawView = EditorDrawView()
-        drawView.delegate = self
-        addSubview(drawView)
-        
-        stickerView = EditorStickersView()
-        stickerView.delegate = self
-        addSubview(stickerView)
+
     }
     
     required init?(coder: NSCoder) {
@@ -410,6 +186,7 @@ class EditorContentView: UIView {
 }
 
 extension EditorContentView: EditorVideoPlayerViewDelegate {
+
     var isPlaying: Bool {
         videoView.isPlaying
     }
@@ -516,186 +293,5 @@ extension EditorContentView: EditorVideoPlayerViewDelegate {
     func playerView(_ playerView: EditorVideoPlayerView, didChangedTimeAt time: CMTime) {
         delegate?.contentView(self, didChangedTimeAt: time)
     }
-    func playerView(_ playerView: EditorVideoPlayerView, applyFilter sourceImage: CIImage, at time: CMTime) -> CIImage {
-        delegate?.contentView(self, videoApplyFilter: sourceImage, at: time) ?? sourceImage
-    }
-}
 
-@available(iOS 13.0, *)
-extension EditorContentView: EditorCanvasViewDelegate {
-    
-    var canvasImage: UIImage {
-        guard let canvasView = canvasView as? EditorCanvasView else {
-            return .init()
-        }
-        return canvasView.image
-    }
-    
-    var isCanvasEmpty: Bool {
-        guard let canvasView = canvasView as? EditorCanvasView else {
-            return true
-        }
-        return canvasView.isEmpty
-    }
-    
-    var isCanvasCanUndo: Bool {
-        guard let canvasView = canvasView as? EditorCanvasView else {
-            return false
-        }
-        return canvasView.isCanUndo
-    }
-    
-    var isCanvasCanRedo: Bool {
-        guard let canvasView = canvasView as? EditorCanvasView else {
-            return false
-        }
-        return canvasView.isCanRedo
-    }
-    
-    func canvasRedo() {
-        guard let canvasView = canvasView as? EditorCanvasView else {
-            return
-        }
-        canvasView.redo()
-    }
-    
-    func canvasUndo() {
-        guard let canvasView = canvasView as? EditorCanvasView else {
-            return
-        }
-        canvasView.undo()
-    }
-    
-    func canvasUndoCurrentAll() {
-        guard let canvasView = canvasView as? EditorCanvasView else {
-            return
-        }
-        canvasView.undoCurrentAll()
-    }
-    
-    func canvasUndoAll() {
-        guard let canvasView = canvasView as? EditorCanvasView else {
-            return
-        }
-        canvasView.undoAll()
-    }
-    
-    func startCanvasDrawing() -> PKToolPicker? {
-        guard let canvasView = canvasView as? EditorCanvasView else {
-            return nil
-        }
-        stickerView.deselectedSticker()
-        return canvasView.startDrawing()
-    }
-    
-    func finishCanvasDrawing() {
-        guard let canvasView = canvasView as? EditorCanvasView else {
-            return
-        }
-        canvasView.finishDrawing()
-        stickerView.deselectedSticker()
-    }
-     
-    func cancelCanvasDrawing() {
-        guard let canvasView = canvasView as? EditorCanvasView else {
-            return
-        }
-        canvasView.cancelDrawing()
-        stickerView.deselectedSticker()
-    }
-    
-    func enterCanvasDrawing() -> PKToolPicker? {
-        guard let canvasView = canvasView as? EditorCanvasView else {
-            return nil
-        }
-        return canvasView.enterDrawing()
-    }
-    
-    func quitCanvasDrawing() {
-        guard let canvasView = canvasView as? EditorCanvasView else {
-            return
-        }
-        canvasView.quitDrawing()
-    }
-    
-    func canvasView(beginDraw canvasView: EditorCanvasView) {
-        delegate?.contentView(drawViewBeginDraw: self)
-    }
-    
-    func canvasView(endDraw canvasView: EditorCanvasView) {
-        delegate?.contentView(drawViewEndDraw: self)
-    }
-    
-    func canvasView(_ canvasView: EditorCanvasView, toolPickerFramesObscuredDidChange toolPicker: PKToolPicker) {
-        delegate?.contentView(self, toolPickerFramesObscuredDidChange: toolPicker)
-    }
-}
-
-extension EditorContentView: EditorDrawViewDelegate {
-    func drawView(beginDraw drawView: EditorDrawView) {
-        delegate?.contentView(drawViewBeginDraw: self)
-    }
-    
-    func drawView(endDraw drawView: EditorDrawView) {
-        delegate?.contentView(drawViewEndDraw: self)
-    }
-}
-
-extension EditorContentView: EditorMosaicViewDelegate {
-    func mosaicView(_  mosaicView: EditorMosaicView, splashColor atPoint: CGPoint) -> UIColor? {
-        imageView.color(for: atPoint)
-    }
-    func mosaicView(beginDraw mosaicView: EditorMosaicView) {
-        delegate?.contentView(drawViewBeginDraw: self)
-    }
-    func mosaicView(endDraw mosaicView: EditorMosaicView) {
-        delegate?.contentView(drawViewEndDraw: self)
-    }
-}
-
-extension EditorContentView: EditorStickersViewDelegate {
-    func stickerView(rotateVideo stickerView: EditorStickersView) {
-        delegate?.contentView(rotateVideo: self)
-    }
-    func stickerView(resetVideoRotate stickerView: EditorStickersView) {
-        delegate?.contentView(resetVideoRotate: self)
-    }
-    
-    func stickerView(_ stickerView: EditorStickersView, shouldAddAudioItem audio: EditorStickerAudio) -> Bool {
-        if let shouldAddAudioItem = delegate?.contentView(self, shouldAddAudioItem: audio) {
-            return shouldAddAudioItem
-        }
-        return true
-    }
-    
-    func stickerView(touchBegan stickerView: EditorStickersView) {
-        delegate?.contentView(drawViewBeginDraw: self)
-    }
-    func stickerView(touchEnded stickerView: EditorStickersView) {
-        delegate?.contentView(drawViewEndDraw: self)
-    }
-    func stickerView(_ stickerView: EditorStickersView, moveToCenter itemView: EditorStickersItemView) -> Bool {
-        delegate?.contentView(self, stickersView: stickerView, moveToCenter: itemView) ?? false
-    }
-    func stickerView(_ stickerView: EditorStickersView, minScale itemSize: CGSize) -> CGFloat {
-        min(35 / itemSize.width, 35 / itemSize.height)
-    }
-    func stickerView(_ stickerView: EditorStickersView, maxScale itemSize: CGSize) -> CGFloat {
-        delegate?.contentView(self, stickerMaxScale: itemSize) ?? 5
-    }
-    func stickerView(_ stickerView: EditorStickersView, didTapStickerItem itemView: EditorStickersItemView) {
-        delegate?.contentView(self, didTapSticker: itemView)
-    }
-    func stickerView(_ stickerView: EditorStickersView, didRemoveItem itemView: EditorStickersItemView) {
-        delegate?.contentView(self, didRemovedSticker: itemView)
-    }
-    func stickerView(_ stickerView: EditorStickersView, shouldRemoveItem itemView: EditorStickersItemView) {
-        delegate?.contentView(self, shouldRemoveSticker: itemView)
-    }
-    func stickerView(itemCenter stickerView: EditorStickersView) -> CGPoint? {
-        delegate?.contentView(self, stickerItemCenter: stickerView)
-    }
-    func stickerView(_ stickerView: EditorStickersView, resetItemViews itemViews: [EditorStickersItemBaseView]) {
-        delegate?.contentView(self, resetItemViews: itemViews)
-    }
 }

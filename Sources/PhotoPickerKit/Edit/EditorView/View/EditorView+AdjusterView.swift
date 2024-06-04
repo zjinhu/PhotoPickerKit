@@ -7,16 +7,9 @@
 
 import UIKit
 import AVFoundation
-import PencilKit
 
 extension EditorView: EditorAdjusterViewDelegate {
-    func editorAdjusterView(_ adjusterView: EditorAdjusterView, shouldAddAudioItem audio: EditorStickerAudio) -> Bool {
-        if let shouldAddAudioItem = editDelegate?.editorView(self, shouldAddAudioItem: audio) {
-            return shouldAddAudioItem
-        }
-        return true
-    }
-    
+
     func editorAdjusterView(willBeginEditing adjusterView: EditorAdjusterView) {
         editDelegate?.editorView(willBeginEditing: self)
     }
@@ -39,30 +32,6 @@ extension EditorView: EditorAdjusterViewDelegate {
     
     func editorAdjusterView(editDidDisappear adjusterView: EditorAdjusterView) {
         editDelegate?.editorView(editDidDisappear: self)
-    }
-    
-    func editorAdjusterView(contentViewBeginDraw adjusterView: EditorAdjusterView) {
-        editDelegate?.editorView(contentViewBeginDraw: self)
-    }
-    
-    func editorAdjusterView(contentViewEndDraw adjusterView: EditorAdjusterView) {
-        editDelegate?.editorView(contentViewEndDraw: self)
-    }
-    
-    func editorAdjusterView(_ adjusterView: EditorAdjusterView, didTapStickerItem itemView: EditorStickersItemView) {
-        editDelegate?.editorView(self, didTapStickerItem: itemView)
-    }
-    func editorAdjusterView(_ adjusterView: EditorAdjusterView, didRemoveItem itemView: EditorStickersItemView) {
-        editDelegate?.editorView(self, didRemoveStickerItem: itemView)
-    }
-    func editorAdjusterView(_ adjusterView: EditorAdjusterView, shouldRemoveItem itemView: EditorStickersItemView) {
-        editDelegate?.editorView(self, shouldRemoveStickerItem: itemView)
-    }
-    func editorAdjusterView(
-        _ adjusterView: EditorAdjusterView,
-        resetItemViews itemViews: [EditorStickersItemBaseView]
-    ) {
-        editDelegate?.editorView(self, resetItemViews: itemViews)
     }
     
     func editorAdjusterView(_ editorAdjusterView: EditorAdjusterView, videoDidPlayAt time: CMTime) {
@@ -101,19 +70,5 @@ extension EditorView: EditorAdjusterViewDelegate {
     ) {
         editDelegate?.editorView(self, videoControlDidChangedTimeAt: time, for: event)
     }
-    func editorAdjusterView(
-        _ editorAdjusterView: EditorAdjusterView,
-        videoApplyFilter sourceImage: CIImage,
-        at time: CMTime
-    ) -> CIImage {
-        if let image = editDelegate?.editorView(self, videoApplyFilter: sourceImage, at: time) {
-            return image
-        }
-        return sourceImage
-    }
-    
-    @available(iOS 13.0, *)
-    func editorAdjusterView(_ editorAdjusterView: EditorAdjusterView, toolPickerFramesObscuredDidChange toolPicker: PKToolPicker) {
-        editDelegate?.editorView(self, toolPickerFramesObscuredDidChange: toolPicker)
-    }
+
 }

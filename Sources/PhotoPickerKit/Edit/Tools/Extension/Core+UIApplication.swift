@@ -9,29 +9,20 @@ import UIKit
 
 extension UIApplication {
     static var _keyWindow: UIWindow? {
-        if #available(iOS 13.0, *), Thread.isMainThread,
-           let window = shared.windows.filter({ $0.isKeyWindow }).last {
-            return window
-        }
-        guard let window = shared.delegate?.window else {
-            return shared.keyWindow
-        }
+        let window = shared.windows.filter({ $0.isKeyWindow }).last
         return window
     }
     
     static var interfaceOrientation: UIInterfaceOrientation {
-        if #available(iOS 13.0, *), Thread.isMainThread,
-           let orientation = _keyWindow?.windowScene?.interfaceOrientation {
-            return orientation
-        }
-        return shared.statusBarOrientation
+        let orientation = _keyWindow?.windowScene?.interfaceOrientation ?? .portrait
+        return orientation
     }
 }
 
 extension UIScreen {
     
     static var _scale: CGFloat {
-        if #available(iOS 13.0, *), Thread.isMainThread,
+        if Thread.isMainThread,
            let scale = UIApplication._keyWindow?.windowScene?.screen.scale {
             return scale
         }
@@ -39,7 +30,7 @@ extension UIScreen {
     }
     
     static var _width: CGFloat {
-        if #available(iOS 13.0, *), Thread.isMainThread,
+        if Thread.isMainThread,
            let width = UIApplication._keyWindow?.windowScene?.screen.bounds.width {
             return width
         }
@@ -47,7 +38,7 @@ extension UIScreen {
     }
     
     static var _height: CGFloat {
-        if #available(iOS 13.0, *), Thread.isMainThread,
+        if Thread.isMainThread,
            let height = UIApplication._keyWindow?.windowScene?.screen.bounds.height {
             return height
         }
@@ -55,7 +46,7 @@ extension UIScreen {
     }
     
     static var _size: CGSize {
-        if #available(iOS 13.0, *), Thread.isMainThread,
+        if Thread.isMainThread,
            let size = UIApplication._keyWindow?.windowScene?.screen.bounds.size {
             return size
         }

@@ -24,9 +24,8 @@ struct QuickLookView: View {
                         viewModel.selectedAssets.replaceSubrange(viewModel.previewSelectIndex...viewModel.previewSelectIndex, with: [replace])
                     }
                              .statusBar(hidden: true)
-                             .background(
-                                Color.black.ignoresSafeArea()
-                             )
+                             .ignoresSafeArea()
+                             
                 }
                 
             }

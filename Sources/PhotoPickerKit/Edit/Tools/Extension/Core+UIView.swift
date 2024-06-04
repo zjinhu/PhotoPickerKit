@@ -8,7 +8,7 @@
 
 import UIKit
 
-extension UIView: HXPickerCompatible {
+extension UIView {
     var x: CGFloat {
         get { frame.origin.x }
         set {
@@ -97,19 +97,8 @@ extension UIView: HXPickerCompatible {
     }
     
     func cornersRound(radius: CGFloat, corner: UIRectCorner) {
-        if #available(iOS 11.0, *) {
             layer.cornerRadius = radius
             layer.maskedCorners = corner.mask
-        } else {
-            let path = UIBezierPath(
-                roundedRect: bounds,
-                byRoundingCorners: corner,
-                cornerRadii: CGSize(width: radius, height: radius)
-            )
-            let mask = CAShapeLayer()
-            mask.path = path.cgPath
-            layer.mask = mask
-        }
     }
 }
 
@@ -124,7 +113,7 @@ extension UIRectCorner {
     }
 }
 
-public extension HXPickerWrapper where Base: UIView {
+public extension UIView {
     
     func show(
         text: String? = nil,
@@ -133,7 +122,7 @@ public extension HXPickerWrapper where Base: UIView {
         animated: Bool = true
     ) {
         ProgressHUD.showLoading(
-            addedTo: base,
+            addedTo: self,
             text: text,
             afterDelay: delayShow,
             animated: animated,
@@ -146,7 +135,7 @@ public extension HXPickerWrapper where Base: UIView {
         animated: Bool = true
     ) {
         ProgressHUD.showWarning(
-            addedTo: base,
+            addedTo: self,
             text: text,
             animated: animated,
             delayHide: delayHide
@@ -158,7 +147,7 @@ public extension HXPickerWrapper where Base: UIView {
         animated: Bool = true
     ) {
         ProgressHUD.showSuccess(
-            addedTo: base,
+            addedTo: self,
             text: text,
             animated: animated,
             delayHide: delayHide
@@ -169,7 +158,7 @@ public extension HXPickerWrapper where Base: UIView {
         animated: Bool = true
     ) {
         ProgressHUD.hide(
-            forView: base,
+            forView: self,
             animated: animated,
             afterDelay: delay
         )

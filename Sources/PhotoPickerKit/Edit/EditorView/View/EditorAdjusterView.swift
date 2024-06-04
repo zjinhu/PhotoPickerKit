@@ -20,13 +20,7 @@ class EditorAdjusterView: UIView {
     var contentInsets: UIEdgeInsets = .zero
     var setContentInsets: (() -> UIEdgeInsets)?
     var maximumZoomScale: CGFloat = 20
-    var exportScale: CGFloat = UIScreen._scale {
-        didSet {
-            if #available(iOS 13.0, *), let canvasView = contentView.canvasView as? EditorCanvasView {
-                canvasView.exportScale = exportScale
-            }
-        }
-    }
+    var exportScale: CGFloat = UIScreen._scale
     
     var baseContentSize: CGSize = .zero
     var zoomScale: CGFloat = 1 {
@@ -93,9 +87,6 @@ class EditorAdjusterView: UIView {
         if state == .edit {
             return true
         }
-        if isDrawEnabled, drawType == .canvas {
-            return containerView.point(inside: point, with: event)
-        }
         return super.point(inside: point, with: event)
     }
     
@@ -150,9 +141,7 @@ class EditorAdjusterView: UIView {
         scrollView.showsHorizontalScrollIndicator = false
         scrollView.clipsToBounds = false
         scrollView.scrollsToTop = false
-        if #available(iOS 11.0, *) {
             scrollView.contentInsetAdjustmentBehavior = .never
-        }
         scrollView.addSubview(contentView)
         
         mirrorView = UIView()
@@ -172,12 +161,7 @@ class EditorAdjusterView: UIView {
     var beforeRotateViewTransform: CGAffineTransform = .identity
     var beforeScrollViewTransform: CGAffineTransform = .identity
     var beforeScrollViewZoomScale: CGFloat = 1
-    var beforeDrawBrushInfos: [EditorDrawView.BrushInfo] = []
-    var beforeMosaicDatas: [EditorMosaicView.MosaicData] = []
-    var beforeStickerItem: EditorStickersView.Item?
-    var beforeCanvasCurrentData: EditorCanvasData?
-    var beforeCanvasHistoryData: EditorCanvasData?
-    
+
     deinit {
         videoTool?.cancelExport()
     }
@@ -262,20 +246,6 @@ extension EditorAdjusterView {
     
     var imageSize: CGSize {
         contentView.contentSize
-    }
-    
-    var mosaicOriginalImage: UIImage? {
-        get {
-            contentView.mosaicOriginalImage
-        }
-        set {
-            contentView.mosaicOriginalImage = newValue
-        }
-    }
-    
-    var mosaicOriginalCGImage: CGImage? {
-        get { contentView.mosaicOriginalCGImage }
-        set { contentView.mosaicOriginalCGImage = newValue }
     }
     
     func setImage(
@@ -925,10 +895,7 @@ extension EditorAdjusterView {
         }else {
             maskImage = oldMaskImage
         }
-        var canvasData: EditorCanvasData?
-        if #available(iOS 13.0, *), let canvasView = contentView.canvasView as? EditorCanvasView {
-            canvasData = canvasView.data
-        }
+
         return .init(
             content: .init(
                 editSize: adjustedData.1,
@@ -942,11 +909,7 @@ extension EditorAdjusterView {
                 controlScale: frameView.controlView.size.height / frameView.controlView.size.width,
                 adjustedFactor: adjusted
             ),
-            maskImage: maskImage,
-            drawView: contentView.drawView.getBrushData(),
-            canvasData: canvasData,
-            mosaicView: contentView.mosaicView.getMosaicData(),
-            stickersView: contentView.stickerView.getStickerItem()
+            maskImage: maskImage
         )
     }
     
@@ -1033,12 +996,6 @@ extension EditorAdjusterView {
             }
         }
         contentView.zoomScale = zoomScale * scrollView.zoomScale
-        contentView.drawView.setBrushData(factor.drawView, viewSize: contentView.bounds.size)
-        if #available(iOS 13.0, *), let canvasView = contentView.canvasView as? EditorCanvasView {
-            canvasView.setData(data: factor.canvasData, viewSize: contentView.bounds.size)
-        }
-        contentView.mosaicView.setMosaicData(mosaicDatas: factor.mosaicView, viewSize: contentView.bounds.size)
-        contentView.stickerView.setStickerItem(factor.stickersView, viewSize: contentView.bounds.size)
     }
     
     private func resetOldViewData() {

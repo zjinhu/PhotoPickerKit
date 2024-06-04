@@ -66,7 +66,7 @@ final class ProgressCircleView: UIView {
         progressLb.textColor = .white
         progressLb.textAlignment = .center
         progressLb.adjustsFontSizeToFitWidth = true
-        progressLb.font = .mediumPingFang(ofSize: 13)
+        progressLb.font = .systemFont(ofSize: 13, weight: .medium)
         progressLb.text = "0%"
     }
     

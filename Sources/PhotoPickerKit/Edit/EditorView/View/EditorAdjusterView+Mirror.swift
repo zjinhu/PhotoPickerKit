@@ -39,7 +39,6 @@ extension EditorAdjusterView {
         let transform = adjustedFactor.mirrorTransform
         mirrorView.transform = transform.scaledBy(x: 1, y: -1)
         adjustedFactor.mirrorTransform = mirrorView.transform
-        contentView.stickerView.mirrorHorizontallyHandler()
     }
     
     func mirrorVertically(animated: Bool, completion: (() -> Void)? = nil) {
@@ -72,6 +71,5 @@ extension EditorAdjusterView {
         let transform = adjustedFactor.mirrorTransform
         mirrorView.transform = transform.scaledBy(x: -1, y: 1)
         adjustedFactor.mirrorTransform = mirrorView.transform
-        contentView.stickerView.mirrorVerticallyHandler()
     }
 }

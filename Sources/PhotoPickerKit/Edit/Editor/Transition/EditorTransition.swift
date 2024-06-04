@@ -35,7 +35,7 @@ class EditorTransition: NSObject, UIViewControllerAnimatedTransitioning {
         using transitionContext: UIViewControllerContextTransitioning?
     ) -> TimeInterval {
         if let editorVC = transitionContext?.viewController(
-            forKey: (mode == .push || mode == .present) ? .to : .from) as? EditorViewController,
+            forKey: (mode == .push || mode == .present) ? .to : .from) as? EditViewController,
            let duration = editorVC.delegate?.editorViewController(
             editorVC, transitionDuration: mode) {
             return duration
@@ -84,7 +84,7 @@ class EditorTransition: NSObject, UIViewControllerAnimatedTransitioning {
         var fromRect: CGRect = .zero
         var toRect: CGRect = .zero
         let isSpring: Bool = true
-        if let editorVC = editorVC as? EditorViewController {
+        if let editorVC = editorVC as? EditViewController {
             switch mode {
             case .push, .present:
                 editorVC.isTransitionCompletion = false
@@ -173,13 +173,13 @@ class EditorTransition: NSObject, UIViewControllerAnimatedTransitioning {
             case .push, .present:
                 contentView.backgroundColor = .black
                
-                if let editorVC = editorVC as? EditorViewController {
+                if let editorVC = editorVC as? EditViewController {
                     editorVC.transitionShow()
                 }
             case .pop, .dismiss:
                 contentView.backgroundColor = .clear
             
-                if let editorVC = editorVC as? EditorViewController {
+                if let editorVC = editorVC as? EditViewController {
                     editorVC.transitionHide()
                 }
             }
@@ -223,7 +223,7 @@ class EditorTransition: NSObject, UIViewControllerAnimatedTransitioning {
                     self.requestID = nil
                 }
                 
-                if let editorVC = editorVC as? EditorViewController {
+                if let editorVC = editorVC as? EditViewController {
                     editorVC.view.backgroundColor = .black
                     editorVC.editorView.isHidden = false
                     editorVC.isTransitionCompletion = true

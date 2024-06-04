@@ -47,11 +47,7 @@ class EditorMaskView: UIView {
     }
     
     var maskType: EditorView.MaskType = {
-        if #available(iOS 13.0, *) {
-            return .blurEffect(style: .systemThickMaterialDark)
-        } else {
-            return .blurEffect(style: .dark)
-        }
+        return .blurEffect(style: .systemThickMaterialDark)
     }() {
         didSet {
             switch type {
@@ -213,7 +209,7 @@ class EditorMaskView: UIView {
 //        gridlinesLayer.shadowOpacity = 0.5
         
         sizeLb = UILabel()
-        sizeLb.font = .semiboldPingFang(ofSize: UIDevice.isPad ? 18 : 15)
+        sizeLb.font = .systemFont(ofSize: UIDevice.isPad ? 18 : 15, weight: .semibold)
         sizeLb.textColor = .white
         sizeLb.textAlignment = .center
         sizeLb.isHighlighted = true

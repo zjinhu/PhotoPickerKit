@@ -17,8 +17,6 @@ protocol EditorVideoPlayerViewDelegate: AnyObject {
     func playerView(_ playerView: EditorVideoPlayerView, readyToPlay duration: CMTime)
     func playerView(_ playerView: EditorVideoPlayerView, didChangedBuffer time: CMTime)
     func playerView(_ playerView: EditorVideoPlayerView, didChangedTimeAt time: CMTime)
-    
-    func playerView(_ playerView: EditorVideoPlayerView, applyFilter sourceImage: CIImage, at time: CMTime) -> CIImage
 }
 
 class EditorVideoPlayerView: VideoPlayerView {
@@ -234,25 +232,9 @@ class EditorVideoPlayerView: VideoPlayerView {
     func videoComposition(_ avAsset: AVAsset) -> AVMutableVideoComposition {
         let videoComposition = AVMutableVideoComposition(
             asset: avAsset
-        ) { [weak self] request in
+        ) { request in
             let sourceImage = request.sourceImage
-            guard let self = self,
-                  let ciImage = self.delegate?.playerView(
-                    self,
-                    applyFilter: sourceImage,
-                    at: request.compositionTime
-                  )
-            else {
-                request.finish(
-                    with: NSError(
-                        domain: "videoComposition filter error：ciImage is nil",
-                        code: 500,
-                        userInfo: nil
-                    )
-                )
-                return
-            }
-            request.finish(with: ciImage, context: nil)
+            request.finish(with: sourceImage, context: nil)
         }
         videoComposition.renderScale = 1
         videoComposition.frameDuration = CMTimeMake(value: 1, timescale: 30)

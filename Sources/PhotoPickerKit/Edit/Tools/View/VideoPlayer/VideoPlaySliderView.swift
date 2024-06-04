@@ -100,7 +100,7 @@ public class VideoPlaySliderView: UIView, SliderViewDelegate {
         currentTimeLb = UILabel(frame: CGRect(x: 0, y: 0, width: 65, height: 30))
         currentTimeLb.text = "--:--"
         currentTimeLb.textColor = .white
-        currentTimeLb.font = .regularPingFang(ofSize: 15)
+        currentTimeLb.font = .systemFont(ofSize: 15)
         currentTimeLb.layer.shadowColor = UIColor.black.withAlphaComponent(0.7).cgColor
         currentTimeLb.layer.shadowOpacity = 0.5
         currentTimeLb.layer.shadowOffset = .init(width: -1, height: 1)
@@ -108,7 +108,7 @@ public class VideoPlaySliderView: UIView, SliderViewDelegate {
         totalTimeLb = UILabel(frame: CGRect(x: 0, y: 0, width: 65, height: 30))
         totalTimeLb.text = "--:--"
         totalTimeLb.textColor = .white
-        totalTimeLb.font = .regularPingFang(ofSize: 15)
+        totalTimeLb.font = .systemFont(ofSize: 15)
         totalTimeLb.layer.shadowColor = UIColor.black.withAlphaComponent(0.7).cgColor
         totalTimeLb.layer.shadowOpacity = 0.5
         totalTimeLb.layer.shadowOffset = .init(width: -1, height: 1)
