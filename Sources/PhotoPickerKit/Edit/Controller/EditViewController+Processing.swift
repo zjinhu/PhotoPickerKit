@@ -17,14 +17,14 @@ extension EditViewController {
                 isCropTime = true
             }
         }
-
+        
         var isCropSize: Bool = false
         if selectedAsset.contentType == .image {
             isCropSize = editorView.isCropedImage
         }else if selectedAsset.contentType == .video {
             isCropSize = editorView.isCropedVideo
         }
-
+        
         return isCropTime || isCropSize
     }
 }
@@ -160,7 +160,7 @@ extension EditViewController {
     
     func videoProcessing() {
         let isCropTime: Bool = editorView.videoDuration.seconds != videoControlView.middleDuration
- 
+        
         if editorView.isCropedVideo || isCropTime {
             let timeRange: CMTimeRange
             if isCropTime {
@@ -168,7 +168,7 @@ extension EditViewController {
             }else {
                 timeRange = .zero
             }
-
+            
             let factor = EditorVideoFactor(
                 timeRang: timeRange,
                 maskType: config.cropSize.maskType,
@@ -318,7 +318,7 @@ extension EditViewController {
                 controlInfo: videoControlView.controlInfo
             )
         }
-
+        
         editedData = .init(
             cropTime: cropTime,
             cropSize: .init(
@@ -332,7 +332,7 @@ extension EditViewController {
         selectedAsset.result = editedResult
         delegate?.editorViewController(self, didFinish: selectedAsset)
         finishHandler?(selectedAsset, self)
-//        delegate?.editorViewController(self, didFinish: [editedResult])
+        //        delegate?.editorViewController(self, didFinish: [editedResult])
         backClick()
     }
 }
@@ -340,7 +340,7 @@ extension EditViewController {
 extension EditViewController {
     
     func backClick(_ isCancel: Bool = false) {
-
+        
         PhotoManager.HUDView.dismiss(delay: 0, animated: true, for: view)
         removeVideo()
         if isCancel {

@@ -64,7 +64,6 @@ public class EditViewController: UIViewController {
     var isLoadCompletion: Bool = false
     var isLoadVideoControl: Bool = false
     
-    
     var videoControlInfo: EditorVideoControlInfo?
     
     var backgroundInsetRect: CGRect = .zero

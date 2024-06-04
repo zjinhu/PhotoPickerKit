@@ -44,7 +44,7 @@ extension EditViewController: UIScrollViewDelegate {
             let viewWidth = scrollView.width - scrollView.contentInset.left - scrollView.contentInset.right
             let viewHeight = scrollView.height - scrollView.contentInset.top - scrollView.contentInset.bottom
             let offsetX = (viewWidth > scrollView.contentSize.width) ?
-                (viewWidth - scrollView.contentSize.width) * 0.5 : 0
+            (viewWidth - scrollView.contentSize.width) * 0.5 : 0
             let offsetY = (viewHeight > contentHeight) ?
             (viewHeight - contentHeight) * 0.5 : 0
             let centerX = scrollView.contentSize.width * 0.5 + offsetX

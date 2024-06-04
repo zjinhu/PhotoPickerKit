@@ -9,7 +9,7 @@ import UIKit
 import AVFoundation
 
 extension EditViewController: EditorViewDelegate {
-
+    
     var isReset: Bool {
         return editorView.canReset
     }

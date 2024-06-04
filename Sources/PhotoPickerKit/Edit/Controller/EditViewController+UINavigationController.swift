@@ -63,7 +63,7 @@ extension EditViewController {
         videoControlView.alpha = 1
         invertColorButton.alpha = 1
     }
-
+    
     func transitionCompletion() {
         switch loadAssetStatus {
         case .loadding(let isProgress):

@@ -24,7 +24,7 @@ public protocol EditViewControllerDelegate: AnyObject {
     func editorViewController(
         didCancel editorViewController: EditViewController
     )
-
+    
     // MARK: 只支持 push/pop ，跳转之前需要 navigationController?.delegate = editorViewController
     /// 转场动画时长
     func editorViewController(
@@ -60,7 +60,7 @@ public protocol EditViewControllerDelegate: AnyObject {
     ) -> CGRect?
     
 }
-    
+
 extension EditViewControllerDelegate {
     
     func editorViewController(
@@ -69,7 +69,7 @@ extension EditViewControllerDelegate {
     ) {
         back(editorViewController)
     }
-
+    
     func editorViewController(
         didCancel editorViewController: EditViewController
     ) {
@@ -114,4 +114,4 @@ extension EditViewControllerDelegate {
         }
     }
 }
- 
+

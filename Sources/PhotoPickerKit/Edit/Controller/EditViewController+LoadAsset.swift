@@ -134,7 +134,7 @@ extension EditViewController {
             selectedThumbnailImage = image
         }
     }
-
+    
     func filtersViewDidLoad() {
         if editorView.type == .video {
             if let avAsset = editorView.avAsset {
