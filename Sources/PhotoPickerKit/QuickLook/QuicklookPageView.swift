@@ -37,6 +37,20 @@ class QuicklookPageView: UIView {
                 self?.collectionView.scrollToItem(at: indexPath, at: .centeredHorizontally, animated: true)
 
             }.store(in: &cancellables)
+        
+        self.viewModel.$resetVideoStatus
+            .receive(on: RunLoop.main)
+            .sink {[weak self] index in
+                guard let self = self else{ return }
+                for cell in self.collectionView.visibleCells{
+                    if let videoCell = cell as? QuicklookVideoCell {
+                        videoCell.isPlaying = false
+                        videoCell.player.pause()
+                        videoCell.player.seek(to: .zero)
+                    }
+                }
+
+            }.store(in: &cancellables)
     }
     
     lazy var snapshot = NSDiffableDataSourceSnapshot<AssetSection, SelectedAsset>()

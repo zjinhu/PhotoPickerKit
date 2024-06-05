@@ -8,7 +8,6 @@
 import SwiftUI
 import PhotosUI
 import Photos
-import BrickKit
 import PhotoPickerKit
 struct QLivePhotoView: View {
     let asset: SelectedAsset

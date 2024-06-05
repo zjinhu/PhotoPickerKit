@@ -306,10 +306,7 @@ public class EditViewController: UIViewController {
             NSLayoutConstraint.deactivate(portraitConstraints)
             NSLayoutConstraint.activate(landscapeConstraints)
             if orientationDidChange || firstAppear {
-                videoControlView.frame = .init(
-                    x: 0,
-                    y: view.height - UIDevice.bottomMargin - 50,
-                    width: view.width, height: 40
+                videoControlView.frame = .init(x: 0, y: view.height - UIDevice.bottomMargin - 50, width: view.width, height: 40
                 )
             }
         }

@@ -7,7 +7,7 @@
 
 import UIKit
 
-public struct EditorConfiguration: IndicatorTypeConfig, PhotoHUDConfig {
+public struct EditorConfiguration: IndicatorTypeConfig {
 
     public var modalPresentationStyle: UIModalPresentationStyle
  

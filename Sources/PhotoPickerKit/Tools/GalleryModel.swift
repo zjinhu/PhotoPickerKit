@@ -29,7 +29,9 @@ class GalleryModel: ObservableObject {
     
     @Published var isPresentedEdit = false
     @Published var previewSelectIndex: Int = 0
-     
+    
+    @Published var resetVideoStatus = false
+    
     private var subscribers: [AnyCancellable] = []
     var selectIndesPaths: [IndexPath] = []
     
@@ -96,10 +98,8 @@ extension GalleryModel {
 
 @MainActor
 public class PhotoViewModel: ObservableObject {
-    @Published
-    public var image: UIImage?
-    @Published
-    public var time: Double?
+    @Published public var image: UIImage?
+    @Published public var time: Double?
     private var requestID: PHImageRequestID?
     private var currentTask: Task<Void, Never>?
     

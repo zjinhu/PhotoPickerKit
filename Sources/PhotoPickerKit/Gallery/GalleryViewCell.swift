@@ -28,6 +28,7 @@ class GalleryViewCell: UICollectionViewCell {
                 }else{
                     photoModel?.loadImage(size: .init(width: cellWidth, height: cellWidth))
                 }
+//                imageView.image = asset.asset.toImage(size: .init(width: cellWidth, height: cellWidth), mode: .aspectFill)
                 
                 numberLabel.isHidden = viewModel?.maxSelectionCount == 1
                 

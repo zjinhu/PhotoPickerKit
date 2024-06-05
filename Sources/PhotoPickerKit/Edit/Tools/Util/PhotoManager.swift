@@ -30,9 +30,7 @@ public final class PhotoManager: NSObject {
         return false
     }
     public static var HUDView: PhotoHUDProtocol.Type = ProgressHUD.self
-    
-    public var isDebugLogsEnabled: Bool = false
-    
+
     /// 当前外观样式，每次创建PhotoPickerController时赋值
     var appearanceStyle: AppearanceStyle = .varied
     

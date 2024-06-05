@@ -13,16 +13,7 @@ enum AssetSection{
 }
 
 public class SelectedAsset : Identifiable, Equatable, Hashable{
-    
-    public static func == (lhs: SelectedAsset, rhs: SelectedAsset) -> Bool {
-        lhs.id == rhs.id
-    }
-    
-    public func hash(into hasher: inout Hasher) {
-        hasher.combine(id)
-    }
-    
-    public let id = UUID()
+
     public let asset: PHAsset
     
     /// 获取修改后视频URL或者Live Photo的视频URL
@@ -59,7 +50,7 @@ public class SelectedAsset : Identifiable, Equatable, Hashable{
         case .video:
             return .video
         default:
-            return .unknown
+            return .image
         }
     }
     
@@ -68,7 +59,6 @@ public class SelectedAsset : Identifiable, Equatable, Hashable{
         case livePhoto
         case video
         case gif
-        case unknown
     }
     
     public func fetchPHAssetType() -> SelectedAssetType {
@@ -87,7 +77,7 @@ public class SelectedAsset : Identifiable, Equatable, Hashable{
         case .video:
             return .video
         default:
-            return .unknown
+            return .image
         }
     }
     
@@ -144,4 +134,15 @@ public class SelectedAsset : Identifiable, Equatable, Hashable{
         
         return self
     }
+    
+    
+    public static func == (lhs: SelectedAsset, rhs: SelectedAsset) -> Bool {
+        lhs.id == rhs.id
+    }
+    
+    public func hash(into hasher: inout Hasher) {
+        hasher.combine(id)
+    }
+    
+    public let id = UUID()
 }

@@ -67,11 +67,7 @@
 			children = (
 				8CBE8E9E2BF72D3B00AD8F96 /* Info.plist */,
 				8C977C552BECB8A700EAD700 /* PhotoPickerDemoApp.swift */,
-				8C66E67B2BFF2CA300C828A2 /* QLGifView.swift */,
-				8C66E67D2BFF2CA300C828A2 /* QLImageView.swift */,
-				8C66E67A2BFF2CA300C828A2 /* QLivePhotoView.swift */,
-				8C66E6792BFF2CA300C828A2 /* QLThumbnailView.swift */,
-				8C66E67C2BFF2CA300C828A2 /* QLVideoView.swift */,
+				8CF323EB2C0EEB35006B2539 /* Demo */,
 				8C977C572BECB8A700EAD700 /* ContentView.swift */,
 				8C977C592BECB8A800EAD700 /* Assets.xcassets */,
 				8C977C5B2BECB8A800EAD700 /* Preview Content */,
@@ -92,6 +88,18 @@
 			children = (
 			);
 			name = Frameworks;
+			sourceTree = "<group>";
+		};
+		8CF323EB2C0EEB35006B2539 /* Demo */ = {
+			isa = PBXGroup;
+			children = (
+				8C66E67B2BFF2CA300C828A2 /* QLGifView.swift */,
+				8C66E67D2BFF2CA300C828A2 /* QLImageView.swift */,
+				8C66E67A2BFF2CA300C828A2 /* QLivePhotoView.swift */,
+				8C66E6792BFF2CA300C828A2 /* QLThumbnailView.swift */,
+				8C66E67C2BFF2CA300C828A2 /* QLVideoView.swift */,
+			);
+			path = Demo;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */

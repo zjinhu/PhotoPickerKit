@@ -128,52 +128,11 @@ class QuicklookViewController: UIViewController {
     @objc
     func edit(){
         // MARK: - 点击编辑按钮开始制造数据
-        var sset = viewModel.selectedAssets[viewModel.previewSelectIndex]
-        switch sset.fetchPHAssetType(){
-
-        case .video:
-            
-            Task{
-                if let url = await sset.asset.getVideoUrl(){
-                    await MainActor.run{
-                        sset.videoUrl = url
-                        viewModel.selectedAsset = sset
-                        viewModel.isPresentedEdit.toggle()
-                    }
-                }
-            }
-            
-        case .livePhoto:
-            
-            sset.asset.getLivePhotoVideoUrl { url in
-                if let url {
-                    DispatchQueue.main.async {
-                        sset.videoUrl = url
-                        self.viewModel.selectedAsset = sset
-                        self.viewModel.isPresentedEdit.toggle()
-                    }
-                }
-            }
-            
-        case .gif:
-            
-            if let imageData = sset.asset.toImageData(){
-                GifTool.createVideoFromGif(gifData: imageData) { url in
-                    DispatchQueue.main.async {
-                        sset.videoUrl = url
-//                        sset.imageData = imageData
-                        self.viewModel.selectedAsset = sset
-                        self.viewModel.isPresentedEdit.toggle()
-                    }
-                }
-            }
-        default: 
-            
-            if let image = sset.asset.toImage(){
-                sset.image = image
-                viewModel.selectedAsset = sset
-                viewModel.isPresentedEdit.toggle()
-            }
+        Task{
+            let sset = viewModel.selectedAssets[viewModel.previewSelectIndex]
+            viewModel.selectedAsset = await sset.getOriginalSource()
+            viewModel.isPresentedEdit.toggle()
+            viewModel.resetVideoStatus.toggle()
         }
     }
     

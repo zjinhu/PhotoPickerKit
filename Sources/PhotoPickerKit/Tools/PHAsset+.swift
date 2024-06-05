@@ -12,7 +12,7 @@ public extension PHAsset{
     
     /// 单次使用，不要频繁调用，尤其是列表或者循环中
     func toImage(size: CGSize = .zero,
-                 mode: PHImageContentMode = .default) -> UIImage? {
+                 mode: PHImageContentMode = .aspectFill) -> UIImage? {
         let options = PHImageRequestOptions()
         options.isNetworkAccessAllowed = true
         options.deliveryMode = .opportunistic
@@ -21,14 +21,19 @@ public extension PHAsset{
         
         var requestSize: CGSize
         if size == .zero{
-            requestSize = CGSize(width: UIScreen.main.bounds.size.width * UIScreen.main.scale, height: UIScreen.main.bounds.size.height * UIScreen.main.scale)
+            requestSize = PHImageManagerMaximumSize
         }else{
             requestSize = CGSize(width: size.width * UIScreen.main.scale, height: size.height * UIScreen.main.scale)
+            options.resizeMode = .exact
         }
         
-        PHCachingImageManager.default().requestImage(for: self, targetSize: requestSize, contentMode: mode, options: options) { result, info in
-            image = result
-        }
+        PHCachingImageManager.default().requestImage(
+            for: self,
+            targetSize: requestSize,
+            contentMode: mode,
+            options: options) { result, info in
+                image = result
+            }
         return image
     }
     
@@ -71,7 +76,7 @@ public extension PHAsset{
         options.deliveryMode = .opportunistic
         var imageData: Data?
         options.isSynchronous = true
- 
+        
         PHCachingImageManager.default().requestImageDataAndOrientation(for: self, options: options) { data, _, _, _ in
             imageData = data
         }
@@ -80,7 +85,7 @@ public extension PHAsset{
     
     @discardableResult
     func getImageData(_ resultClosure: @escaping (Data?)->()) -> PHImageRequestID{
-
+        
         let options = PHImageRequestOptions()
         options.isNetworkAccessAllowed = true
         options.deliveryMode = .opportunistic
@@ -95,8 +100,8 @@ public extension PHAsset{
     }
     
     func getLivePhoto(size: CGSize = PHImageManagerMaximumSize,
-                       mode: PHImageContentMode = .default,
-                       resultClosure: @escaping (PHLivePhoto?)->()) -> PHImageRequestID {
+                      mode: PHImageContentMode = .default,
+                      resultClosure: @escaping (PHLivePhoto?)->()) -> PHImageRequestID {
         
         let options = PHLivePhotoRequestOptions()
         options.isNetworkAccessAllowed = true      // 允许从iCloud下载
@@ -236,7 +241,7 @@ public extension PHAsset{
             }
         }
     }
-
+    
     func getVideoUrl(_ completion: @escaping (URL?) -> Void) {
         let options = PHVideoRequestOptions()
         options.version = .original
@@ -251,7 +256,7 @@ public extension PHAsset{
             }
         }
     }
-
+    
     func isGIF() -> Bool {
         let options = PHAssetResourceRequestOptions()
         options.isNetworkAccessAllowed = true
@@ -264,5 +269,5 @@ public extension PHAsset{
         }
         return false
     }
-
+    
 }

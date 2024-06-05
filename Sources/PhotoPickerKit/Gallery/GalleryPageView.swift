@@ -13,7 +13,7 @@ struct GalleryPageView: View {
     @Environment(\.dismiss) private var dismiss
     @State private var isNavigationQuickLook = false
     @State private var isNavigationCrop = false
-    @ObservedObject var viewModel = GalleryModel()
+    @StateObject var viewModel: GalleryModel
     @Binding var selected: [SelectedAsset]
     let selectTitle: String?
     
@@ -27,10 +27,12 @@ struct GalleryPageView: View {
         
         self.selectTitle = selectTitle
         
-        self.viewModel.maxSelectionCount = maxSelectionCount
-        self.viewModel.isStatic = onlyImage
-        self.viewModel.autoCrop = autoCrop
-        self.viewModel.cropRatio = cropRatio
+        let model = GalleryModel()
+        model.maxSelectionCount = maxSelectionCount
+        model.isStatic = onlyImage
+        model.autoCrop = autoCrop
+        model.cropRatio = cropRatio
+        _viewModel = StateObject(wrappedValue: model)
     }
     
     var body: some View {
