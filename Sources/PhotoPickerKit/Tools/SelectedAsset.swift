@@ -15,9 +15,7 @@ enum AssetSection{
 public class SelectedAsset : Identifiable, Equatable, Hashable{
 
     public let asset: PHAsset
-    
-    var editType: EditAssetType?
-    
+
     public init(asset: PHAsset) {
         self.asset = asset
     }
@@ -81,26 +79,6 @@ public class SelectedAsset : Identifiable, Equatable, Hashable{
         
         return self
     }
-    
-    var assetType: SelectedAssetType{
-        if isStatic{
-            return .image
-        }
-        if asset.isGIF(){
-            return .gif
-        }
-        switch asset.mediaType {
-        case .image:
-            if asset.mediaSubtypes.contains(.photoLive) {
-                return .livePhoto
-            }
-            return .image
-        case .video:
-            return .video
-        default:
-            return .image
-        }
-    }
 
     public func fetchPHAssetType() -> SelectedAssetType {
         if isStatic{
@@ -131,6 +109,29 @@ public class SelectedAsset : Identifiable, Equatable, Hashable{
     }
     
     public let id = UUID()
+    
+    var editType: EditAssetType?
+    
+    var assetType: SelectedAssetType{
+        if isStatic{
+            return .image
+        }
+        if asset.isGIF(){
+            return .gif
+        }
+        switch asset.mediaType {
+        case .image:
+            if asset.mediaSubtypes.contains(.photoLive) {
+                return .livePhoto
+            }
+            return .image
+        case .video:
+            return .video
+        default:
+            return .image
+        }
+    }
+
 }
 
 
