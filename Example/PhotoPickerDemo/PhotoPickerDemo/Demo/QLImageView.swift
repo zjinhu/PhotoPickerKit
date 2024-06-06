@@ -31,11 +31,11 @@ struct QLImageView: View {
     
     private func loadAsset() {
         
-        if let ima = asset.image{
+        if let ima = asset.editResult?.image{
             photoModel.image = ima
             return
         }
-        if let ima = asset.imageData{
+        if let ima = asset.editResult?.imageData{
             photoModel.image = UIImage(data: ima)
             return
         }

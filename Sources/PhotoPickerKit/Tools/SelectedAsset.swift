@@ -16,25 +16,73 @@ public class SelectedAsset : Identifiable, Equatable, Hashable{
 
     public let asset: PHAsset
     
-    /// 获取修改后视频URL或者Live Photo的视频URL
-    /// 编辑前gif livePhoto vide需要提供videoUrl才可进入逐帧编辑页面
-    public var videoUrl: URL?
-    /// 获取修改后的图片
-    /// 编辑前需要提供image才可进入图片编辑页面
-    public var image: UIImage?
-    
-    /// 获取修改后Live Photo
-    public var livePhoto: PHLivePhoto?
-    ///获取修改后的图片/gif
-    public var imageData: Data?
-    
-    public var isStatic: Bool = false
+    var editType: EditAssetType?
     
     public init(asset: PHAsset) {
         self.asset = asset
     }
     
-    public var assetType: SelectedAssetType{
+    public var isStatic: Bool = false
+
+    public var editResult: EditAssetResult?
+
+    @discardableResult
+    public func getOriginalSource() async -> SelectedAsset{
+        
+        if isStatic{
+            if let ima = asset.toImage(){
+                editType = EditAssetType.image(ima)
+                return self
+            }
+        }
+        
+        switch fetchPHAssetType(){
+        case .video:
+            
+            if let url = await asset.getVideoUrl(){
+                editType = EditAssetType.video(url)
+                return self
+            }
+            
+        case .livePhoto:
+            
+            return await withCheckedContinuation { continuation in
+                self.asset.getLivePhotoVideoUrl { url in
+                    if let url {
+                        self.editType = EditAssetType.livePhoto(url)
+                    }
+                    continuation.resume(returning: self)
+                }
+            }
+            
+        case .gif:
+            
+            return await withCheckedContinuation { continuation in
+                if let imageData = self.asset.toImageData(){
+                    GifTool.createVideoFromGif(gifData: imageData) { url in
+                        if let url{
+                            self.editType = EditAssetType.gif(url)
+                        }
+                        continuation.resume(returning: self)
+                    }
+                }else{
+                    continuation.resume(returning: self)
+                }
+            }
+            
+        default:
+            
+            if let image = asset.toImage(){
+                editType = EditAssetType.image(image)
+                return self
+            }
+            
+        }
+        
+        return self
+    }
+    
+    var assetType: SelectedAssetType{
         if isStatic{
             return .image
         }
@@ -53,14 +101,7 @@ public class SelectedAsset : Identifiable, Equatable, Hashable{
             return .image
         }
     }
-    
-    public enum SelectedAssetType{
-        case image
-        case livePhoto
-        case video
-        case gif
-    }
-    
+
     public func fetchPHAssetType() -> SelectedAssetType {
         if isStatic{
             return .image
@@ -81,61 +122,6 @@ public class SelectedAsset : Identifiable, Equatable, Hashable{
         }
     }
     
-    @discardableResult
-    public func getOriginalSource(isStatic: Bool = false) async -> SelectedAsset{
-        
-        if isStatic{
-            if let ima = asset.toImage(){
-                image = ima
-                return self
-            }
-        }
-        
-        switch fetchPHAssetType(){
-        case .video:
-            
-            if let url = await self.asset.getVideoUrl(){
-                self.videoUrl = url
-                return self
-            }
-            
-        case .livePhoto:
-            
-            return await withCheckedContinuation { continuation in
-                self.asset.getLivePhotoVideoUrl { url in
-                    if let url {
-                        self.videoUrl = url
-                        continuation.resume(returning: self)
-                    }
-                }
-            }
-            
-        case .gif:
-            
-            return await withCheckedContinuation { continuation in
-                if let imageData = self.asset.toImageData(){
-                    GifTool.createVideoFromGif(gifData: imageData) { url in
-                        self.videoUrl = url
-                        continuation.resume(returning: self)
-                    }
-                }else{
-                    continuation.resume(returning: self)
-                }
-            }
-            
-        default:
-            
-            if let image = self.asset.toImage(){
-                self.image = image
-                return self
-            }
-            
-        }
-        
-        return self
-    }
-    
-    
     public static func == (lhs: SelectedAsset, rhs: SelectedAsset) -> Bool {
         lhs.id == rhs.id
     }
@@ -145,4 +131,71 @@ public class SelectedAsset : Identifiable, Equatable, Hashable{
     }
     
     public let id = UUID()
+}
+
+
+public enum SelectedAssetType{
+    case image
+    case livePhoto
+    case video
+    case gif
+}
+
+public enum EditAssetType{
+    case image(UIImage)
+    case livePhoto(URL)
+    case video(URL)
+    case gif(URL)
+}
+
+public enum EditAssetResult {
+    case image(UIImage, Data)
+    case video(URL)
+    case gif(Data?)
+    case livePhoto(PHLivePhoto?)
+    
+    public var image: UIImage? {
+        switch self {
+        case .image(let image, _):
+            return image
+        default:
+            return nil
+        }
+    }
+    
+    public var imageData: Data? {
+        switch self {
+        case .image(_, let data):
+            return data
+        default:
+            return nil
+        }
+    }
+    
+    public var videoURL: URL? {
+        switch self {
+        case .video(let url):
+            return url
+        default:
+            return nil
+        }
+    }
+    
+    public var gifData: Data? {
+        switch self {
+        case .gif(let data):
+            return data
+        default:
+            return nil
+        }
+    }
+    
+    public var livePhoto: PHLivePhoto? {
+        switch self {
+        case .livePhoto(let livePhoto):
+            return livePhoto
+        default:
+            return nil
+        }
+    }
 }

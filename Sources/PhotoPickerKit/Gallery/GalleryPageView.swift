@@ -100,7 +100,10 @@ struct GalleryPageView: View {
                 case .livePhoto:
                     queue.async(group: group) {
                         item.asset.getLivePhotoVideoUrl { url in
-                            item.videoUrl = url
+                            if let url {
+                                let type = EditAssetType.livePhoto(url)
+                                item.editType = type
+                            }
                             items.append(item)
                             group.leave()
                         }
@@ -108,7 +111,10 @@ struct GalleryPageView: View {
                 case .video:
                     queue.async(group: group) {
                         item.asset.getVideoUrl { url in
-                            item.videoUrl = url
+                            if let url {
+                                let type = EditAssetType.video(url)
+                                item.editType = type
+                            }
                             items.append(item)
                             group.leave()
                         }
@@ -118,7 +124,10 @@ struct GalleryPageView: View {
                         if let imageData = item.asset.toImageData(){
                             GifTool.createVideoFromGif(gifData: imageData) { url in
                                 DispatchQueue.main.async {
-                                    item.videoUrl = url
+                                    if let url{
+                                        let type = EditAssetType.gif(url)
+                                        item.editType = type
+                                    }
                                     items.append(item)
                                     group.leave()
                                 }
@@ -130,7 +139,8 @@ struct GalleryPageView: View {
                 default:
                     queue.async(group: group) {
                         if let image = item.asset.toImage(){
-                            item.image = image
+                            let type = EditAssetType.image(image)
+                            item.editType = type
                             items.append(item)
                             group.leave()
                         }

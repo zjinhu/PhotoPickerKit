@@ -53,26 +53,22 @@ struct EditView: UIViewControllerRepresentable {
             config.cropSize.isFixedRatio = false
         }
 
-        switch selectedAsset.assetType {
-        case .livePhoto:
-            if let videoUrl = selectedAsset.videoUrl{
+        if let type = selectedAsset.editType{
+            switch type {
+            case .image(let uIImage):
+                let vc = EditViewController(.init(type: .image(uIImage)), config: config)
+                vc.delegate = context.coordinator
+                return vc
+            case .livePhoto(let uRL):
                 config.video.cropTime.minimumTime = 1.5
                 config.video.cropTime.maximumTime = max(1.5, cropVideoTime)
-                let vc = EditViewController(.init(type: .video(videoUrl)), config: config)
+                let vc = EditViewController(.init(type: .video(uRL)), config: config)
                 vc.delegate = context.coordinator
                 return vc
-            }
-        case .video, .gif:
-            if let url = selectedAsset.videoUrl{
+            case .video(let uRL), .gif(let uRL):
                 config.video.cropTime.minimumTime = 1
                 config.video.cropTime.maximumTime = cropVideoTime
-                let vc = EditViewController(.init(type: .video(url)), config: config)
-                vc.delegate = context.coordinator
-                return vc
-            }
-        default:
-            if let image = selectedAsset.image{
-                let vc = EditViewController(.init(type: .image(image)), config: config)
+                let vc = EditViewController(.init(type: .video(uRL)), config: config)
                 vc.delegate = context.coordinator
                 return vc
             }
@@ -103,7 +99,8 @@ struct EditView: UIViewControllerRepresentable {
                     LivePhoto.generate(videoURL: result.url) { progress in
                         print("LivePhoto--\(progress)")
                     } completion: { live, res in
-                        self.parent.selectedAsset.livePhoto = live
+                        let type = EditAssetResult.livePhoto(live)
+                        self.parent.selectedAsset.editResult = type
                         self.parent.editDone(self.parent.selectedAsset)
                         self.parent.dismiss()
                     }
@@ -114,7 +111,8 @@ struct EditView: UIViewControllerRepresentable {
             case.video:
                 switch asset.result{
                 case .video(let result, _):
-                    parent.selectedAsset.videoUrl = result.url
+                    let type = EditAssetResult.video(result.url)
+                    parent.selectedAsset.editResult = type
                     parent.editDone(parent.selectedAsset)
                     parent.dismiss()
                 default:
@@ -126,7 +124,8 @@ struct EditView: UIViewControllerRepresentable {
                 switch asset.result{
                 case .video(let result, _):
                     GifTool.createGifData(from: result.url) { date in
-                        self.parent.selectedAsset.imageData = date
+                        let type = EditAssetResult.gif(date)
+                        self.parent.selectedAsset.editResult = type
                         self.parent.editDone(self.parent.selectedAsset)
                         self.parent.dismiss()
                     }
@@ -139,10 +138,8 @@ struct EditView: UIViewControllerRepresentable {
                 if let imageURL = asset.result?.url,
                    let imageData = try? Data(contentsOf: imageURL),
                    let image = UIImage(data: imageData){
-                    parent.selectedAsset.image = image
-                    parent.selectedAsset.imageData = imageData
-                }else{
-                    parent.selectedAsset.image = asset.result?.image
+                    let type = EditAssetResult.image(image, imageData)
+                    parent.selectedAsset.editResult = type
                 }
                 parent.editDone(parent.selectedAsset)
                 parent.dismiss()

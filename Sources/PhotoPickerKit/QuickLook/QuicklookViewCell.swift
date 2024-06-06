@@ -140,7 +140,7 @@ class QuicklookImageCell: UICollectionViewCell{
     private var cancellables: Set<AnyCancellable> = []
     
     func setSelectedAsset(asset: SelectedAsset){
-        if let ima = asset.image{
+        if let ima = asset.editResult?.image{
             self.imageView.image = ima
         }else{
             photoModel = PhotoViewModel(asset: asset)
@@ -185,7 +185,7 @@ class QuicklookGifCell: UICollectionViewCell {
     private var cancellables: Set<AnyCancellable> = []
     
     func setSelectedAsset(asset: SelectedAsset){
-        if let imageData = asset.imageData{
+        if let imageData = asset.editResult?.gifData{
             gifView.setImageData(data: imageData)
         }else{
             photoModel = GifViewModel(asset: asset)
@@ -244,7 +244,7 @@ class QuicklookGifCell: UICollectionViewCell {
 class QuicklookLivePhotoCell: UICollectionViewCell {
     private var cancellables: Set<AnyCancellable> = []
     func setSelectedAsset(asset: SelectedAsset){
-        if let live = asset.livePhoto{
+        if let live = asset.editResult?.livePhoto{
             self.livePhotoView.livePhoto = live
         }else{
             photoModel = LivePhotoViewModel(asset: asset)
@@ -303,7 +303,7 @@ class QuicklookVideoCell: UICollectionViewCell {
     
     private var cancellables: Set<AnyCancellable> = []
     func setSelectedAsset(asset: SelectedAsset){
-        if let url = asset.videoUrl{
+        if let url = asset.editResult?.videoURL{
             let playerItem = AVPlayerItem(url: url)
             photoModel?.playerItem = playerItem
             player.replaceCurrentItem(with: playerItem)
