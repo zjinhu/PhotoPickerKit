@@ -44,7 +44,7 @@ struct ContentView: View {
                                selectTitle: "Videos",
                                autoCrop: true,
                                cropRatio: .zero,
-                               onlyImage: true,
+                               onlyImage: false,
                                selected: $selectItem.pictures)
                 
                 Button {
