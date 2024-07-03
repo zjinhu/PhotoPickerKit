@@ -186,7 +186,7 @@ class QuicklookGifCell: UICollectionViewCell {
     
     func setSelectedAsset(asset: SelectedAsset){
         if let imageData = asset.editResult?.gifData{
-            gifView.setImageData(data: imageData)
+            gifView.updateGIF(data: imageData)
         }else{
             photoModel = GifViewModel(asset: asset)
             photoModel?.loadImageData()
@@ -194,15 +194,15 @@ class QuicklookGifCell: UICollectionViewCell {
                 .receive(on: RunLoop.main)
                 .sink {[weak self] imageData in
                     guard let imageData = imageData else { return }
-                    self?.gifView.setImageData(data: imageData)
+                    self?.gifView.updateGIF(data: imageData)
                 }.store(in: &cancellables)
         }
     }
     
     var photoModel: GifViewModel?
     
-    lazy var gifView: UIGIFImageView = {
-        let gifView = UIGIFImageView()
+    lazy var gifView: UIGIFImage = {
+        let gifView = UIGIFImage()
         gifView.contentMode = .scaleAspectFit
         gifView.translatesAutoresizingMaskIntoConstraints = false
         gifView.clipsToBounds = true

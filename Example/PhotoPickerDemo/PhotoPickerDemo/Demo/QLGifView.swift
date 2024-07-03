@@ -21,7 +21,8 @@ struct QLGifView: View {
     var body: some View {
         VStack{
             if let data = gifModel.imageData{
-                GIFView(data: data)
+                GifImage(data: data)
+                    .contentMode(.scaleAspectFit)
             }
         }
         .onAppear{
