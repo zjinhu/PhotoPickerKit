@@ -10,6 +10,8 @@ import PhotosUI
 import Photos
 import Combine
 import SwiftUI
+import BrickKit
+
 class QuicklookCell: UICollectionViewCell{
     private var cancellables: Set<AnyCancellable> = []
     
@@ -201,8 +203,8 @@ class QuicklookGifCell: UICollectionViewCell {
     
     var photoModel: GifViewModel?
     
-    lazy var gifView: UIGIFImage = {
-        let gifView = UIGIFImage()
+    lazy var gifView: UIGifImage = {
+        let gifView = UIGifImage()
         gifView.contentMode = .scaleAspectFit
         gifView.translatesAutoresizingMaskIntoConstraints = false
         gifView.clipsToBounds = true

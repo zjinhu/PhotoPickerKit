@@ -7,6 +7,7 @@
 
 import SwiftUI
 import Photos
+import BrickKit
 
 enum AssetSection{
     case main

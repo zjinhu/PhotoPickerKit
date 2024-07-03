@@ -8,6 +8,7 @@
 import SwiftUI
 import Photos
 import PhotoPickerKit
+import BrickKit
 struct QLGifView: View {
     let asset: SelectedAsset
     @StateObject var gifModel: GifViewModel
