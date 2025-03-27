@@ -1,13 +1,13 @@
 {
-  "originHash" : "2e37d13ab09cbfb7162287b56ab16837f97494211e6be76517cb03f7e86a3f84",
+  "originHash" : "cdda3feebc693662e3a56b476b08112d96abbe32d1f1c1821c192892798768db",
   "pins" : [
     {
       "identity" : "brick_swiftui",
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/zjinhu/Brick_SwiftUI.git",
       "state" : {
-        "revision" : "ab85d4ee45fbeb634a1f2b56ea7b544d4df95de3",
-        "version" : "0.4.3"
+        "revision" : "0ac760661616dd74f75053b9adf007119370ad09",
+        "version" : "0.7.3"
       }
     },
     {

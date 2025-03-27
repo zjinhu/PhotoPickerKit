@@ -47,28 +47,6 @@ struct ContentView: View {
                                onlyImage: false,
                                selected: $selectItem.pictures)
                 
-                Button {
-                    showPicker.toggle()
-                } label: {
-                    Text("打开系统相册")
-                }
-                .photoPicker(isPresented: $showPicker,
-                             selected: $selectedItems,
-                             maxSelectionCount: 1,
-                             matching: .any(of: [.images]))
-                .onChange(of: selectedItems) { newItems in
-                    var images = [UIImage]()
-                    Task{
-                        for item in newItems{
-                            if let image = try await item.loadTransfer(type: UIImage.self){
-                                images.append(image)
-                            }
-                        }
-                        await MainActor.run {
-                            selectedImages = images
-                        }
-                    }
-                }
                 
                 List {
                     
